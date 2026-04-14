@@ -182,6 +182,8 @@ public class WeaponRecipes {
         CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_micro, 1), ModItems.missile_assembly, ModItems.ducttape, DictFrame.fromOne(ModItems.ammo_standard, GunFactory.EnumAmmo.NUKE_HIGH) );
         CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_bhole, 1), ModItems.missile_assembly, ModItems.ducttape, ModItems.black_hole, DictFrame.fromOne(ModItems.circuit, EnumCircuitType.CONTROLLER_ADVANCED) );
         CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_schrabidium, 1), ModItems.missile_assembly, ModItems.ducttape, ItemCell.getFullCell(Fluids.AMAT), ANY_HARDPLASTIC.ingot() );
+        CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_bhole, 1), ModItems.missile_assembly, ModItems.ducttape, ModItems.black_hole, DictFrame.fromOne(ModItems.circuit, EnumCircuitType.CONTROLLER_ADVANCED));
+        CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_schrabidium, 1), ModItems.missile_assembly, ModItems.ducttape, ItemCell.getFullCell(Fluids.ASCHRAB), DictFrame.fromOne(ModItems.circuit, EnumCircuitType.QUANTUM));
         CraftingManager.addShapelessAuto(new ItemStack(ModItems.missile_emp, 1), ModItems.missile_assembly, ModItems.ducttape, ModBlocks.emp_bomb );
 
         //Missile fins
