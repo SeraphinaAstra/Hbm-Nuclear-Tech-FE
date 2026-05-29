@@ -29,7 +29,7 @@ public class GuiScreenAUTOCAL extends GuiScreen {
     protected final TileEntityRadioAUTOCAL autocal;
 
     protected int xSize = 170;
-    protected int ySize = 90;
+    protected int ySize = 138;
     protected int guiLeft;
     protected int guiTop;
 
@@ -145,6 +145,12 @@ public class GuiScreenAUTOCAL extends GuiScreen {
 
     private void drawGuiContainerForegroundLayer(int x, int y) {
 
+        for(int i = 0; i < autocal.history.length; i++) {
+            String line = autocal.history[i];
+            if(line == null || line.isEmpty()) continue;
+            FontRendererUtil.drawFittingString(fontRenderer, line, guiLeft + 7, guiTop + 73 + i * 10, 0x00ff00, 156);
+        }
+
         if(checkClick(x, y, 8, 36, 18, 18)) this.drawHoveringText(TextFormatting.RED + "ON/OFF", x, y);
         if(checkClick(x, y, 28, 36, 18, 18)) this.drawHoveringText(List.of(TextFormatting.RED + "Ignore Errors", "Skips instructions that error,", "leaving the computer turned on.", "May cause unintended behavior", "and inconsistencies."), x, y);
         if(checkClick(x, y, 48, 36, 18, 18)) this.drawHoveringText(List.of(TextFormatting.RED + "Automatic Reboot", "Restarts the computer automatically when", "the program stops due to an error", "or after finishing."), x, y);
@@ -153,8 +159,6 @@ public class GuiScreenAUTOCAL extends GuiScreen {
         if(checkClick(x, y, 104, 36, 18, 18)) this.drawHoveringText(TextFormatting.BLUE + "Open Program File", x, y);
         if(checkClick(x, y, 124, 36, 18, 18)) this.drawHoveringText(List.of(TextFormatting.BLUE + "Download Program", TextFormatting.RED + "Currently unsupported!"), x, y);
         if(checkClick(x, y, 144, 36, 18, 18)) this.drawHoveringText(TextFormatting.BLUE + "Open Documentation", x, y);
-
-        FontRendererUtil.drawFittingString(this.fontRenderer, autocal.stopMessage, guiLeft + 6, guiTop + 75, 0xff0000, 156);
     }
 
     private void drawGuiContainerBackgroundLayer(float f, int mouseX, int mouseY) {
