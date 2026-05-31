@@ -14,14 +14,52 @@
 > change(major API bump).  
 >   - Changes, New Features correspond to a minor bump.  
 >   - Fixes/Performance/Misc correspond to a minor or patch bump.
-> - Previous public release: 2.5.0.1
-> - Next release: at least 2.5.0.2
+> - Previous public release: 2.5.0.2
+> - Next release: at least 2.5.0.3
 
-### SUBSTANTIAL CHANGES
-### Breaking Changes
 ### Fixes
-- 2.5 regression that caused boilers crashing the game on load
+- Meteor impact fallout can once again set flammable blocks on fire, and burning earth now forms correctly when it isn't raining
+- Emissive overlay textures on several blocks and items with Optifine
+- Muffling a force field now silences all of its spark sounds, including the one played when entities are pushed inside
+- Fixed the digamma (DRX) HUD meter using the wrong texture and displaying incorrectly
+- Removed stray debug axis lines that were drawn over custom missiles when held or displayed
+- The ReaSim RBMK automatic control rod screen now shows a power indicator light so you can tell whether the rod is receiving power
+- The Digamma Spear now properly kills nearby living entities — including players in creative mode — when it detonates
+- Stack upgrades are no longer mistakenly treated as speed upgrades when installed in machines
+- Fixed the fluid temperature line appearing multiple times in the tooltips of tanks, barrels and lead containers
+- Cracked keys and launch code pieces now drop from hostile mobs at their intended rate instead of almost never appearing
+- 40mm grenades no longer pass harmlessly through enemies at point-blank range; they now only skip detonating against the shooter
+- Cluster missiles now reliably split into their submunitions on descent
+- The Ore Acidizer now plays its running sound while operating
+- The TOM now correctly spawns its mushroom cloud when it falls below the world surface
+- Fixed volcano cores not saving and resuming their eruption progress
+- Fixed a crash that could occur when a looping machine sound restarted before its previous instance had fully stopped
+- Fixed missing lever and boiler sound effects caused by mismatched sound file names
+- Crane contents, including installed upgrade items, no longer vanish when rotating or adjusting the crane with a screwdriver
+- Fixed a crash when entering a decimal number into the Dark Fusion Core emitter's output field (by xdoxx123)
+- Cable diodes now correctly show their configured throughput limit and network priority on the client instead of stale or default values
 ### Changes
+- Changed some recipes to reflect upstream changes
+- FaU and DNS power armor now also provide strong physical and fire resistance
+- Foundry Scraps are now named after the material they contain (e.g. "Iron Scraps"), with cleaned-up tooltips
+- Overworld bedrock ore deposits now generate in tiers based on local ore density, and higher tiers require a boring fluid (water, sulfuric acid or solvent) to extract; the Ore Density Scanner now reports a deposit's tier and the fluid it needs
+- The RBMK graph panel now lets you set fixed minimum and maximum values for each graph
+- The Automatic Buzz Saw tooltip now lists coal tar creosote as an accepted fuel
+- Volcanic eruptions now react with diamond ore to form gem-bearing volcanic ore (radioactive eruptions produce radioactive gem ore)
+- The detector lens overlay can now pinpoint radioactive volcano cores
+- Refreshed a range of textures
 ### New Features
+- Added radioactive volcanoes: a new radioactive volcano core that erupts radioactive lava and contaminates the surrounding area, plus radioactive lava that irradiates anything it touches and cools into sellafield rock and rare radioactive ores
+- Added a shield-volcano variant that melts away surface terrain over a wide area instead of building a tall cone
+- Fissure bombs detonated inside crater biomes now tear open radioactive volcanic fissures, and nuclear fallout can transmute ordinary volcano cores into radioactive ones
+- Added the Cargo Elevator, a multi-block lift you can extend upward and toggle to raise or lower cargo and entities on its platform
+- Added Pneumatic Storage Access and Pneumatic Storage Clutter blocks, letting pneumatic tube networks store and remotely access inventory contents
+- Added the Redstone-over-Radio Terminal, a console for manually composing and broadcasting RoR commands, with channel setup, repeating signals and a command history
+- Gun turrets and the ZIRNOX reactor can now be controlled remotely over Redstone-over-Radio — toggling power, target filters and whitelists, artillery targeting, venting CO2 and reading reactor stats
+- Fluid barrels, fluid tanks, UF6 and PuF6 tanks, the Orbus tank and the Big Ass Tank 9000 now emit a redstone comparator signal based on how full they are, letting you wire them into redstone automation (PR #1408 by Hacker6329)
+- Mining Helmets can now be found in abandoned mineshaft and spawn bonus chests, and Cracked Keys in abandoned mineshaft and dungeon chests
+- Added a config option to make doors require a continuous redstone signal to stay open, instead of toggling open or closed on each redstone pulse
 ### Performance
 ### Misc
+- Added a new developer bobblehead
+- Updated the Japanese translation for the "dangerous drop" item trait label
