@@ -123,7 +123,7 @@ public class MachineFan extends BlockContainerBakeable implements IToolable, ITo
             this.prevSpin = this.spin;
 
             if (isIndirectlyPowered) {
-                EnumFacing dir = world.getBlockState(pos).getValue(MachineFan.FACING);
+                EnumFacing dir = EnumFacing.byIndex(getBlockMetadata());
 
                 int range = 10;
                 int effRange = 0;
