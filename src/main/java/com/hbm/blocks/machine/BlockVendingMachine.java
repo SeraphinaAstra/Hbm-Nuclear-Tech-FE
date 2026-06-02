@@ -63,12 +63,12 @@ public class BlockVendingMachine extends BlockDummyable implements IBlockMulti, 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         ItemStack stack = playerIn.getHeldItem(hand);
         if (!stack.isEmpty() && stack.getItem() == ModItems.coin_token) {
-            stack.shrink(1);
-
             if (worldIn.isRemote) return true;
 
             BlockPos core = this.findCore(worldIn, pos);
             if (core != null) {
+                stack.shrink(1);
+
                 int meta = worldIn.getBlockState(core).getValue(META);
                 boolean dropSnacks = worldIn.getBlockState(core.up()).getValue(META) >= extra;
 
@@ -100,10 +100,8 @@ public class BlockVendingMachine extends BlockDummyable implements IBlockMulti, 
     @ParametersAreNonnullByDefault
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         BlockPos core = this.findCore(world, pos);
-        int dmg = 0;
-        if (core != null) {
-            if (world.getBlockState(core.up()).getValue(META) >= extra) dmg = 1;
-        }
+        int dmg = 1;
+        if (core != null && world.getBlockState(core.up()).getValue(META) >= extra) dmg = 0;
         drops.add(new ItemStack(this, 1, dmg));
     }
 
