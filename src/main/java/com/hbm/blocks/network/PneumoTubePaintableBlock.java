@@ -265,6 +265,9 @@ public class PneumoTubePaintableBlock extends BlockBakeBase implements IToolable
         TileEntity tile = world.getTileEntity(pos);
         if(tile instanceof TileEntityPneumoTubePaintable tube) {
             IBlockState disguiseState = tube.block != null ? tube.block.getStateFromMeta(tube.meta) : null;
+            if(disguiseState != null && tube.block != this) {
+                disguiseState = tube.block.getExtendedState(disguiseState, world, pos);
+            }
             EnumFacing insertion = tube.insertionDir != null ? tube.insertionDir.toEnumFacing() : null;
             EnumFacing ejection = tube.ejectionDir != null ? tube.ejectionDir.toEnumFacing() : null;
             return ext.withProperty(DISGUISED_STATE, disguiseState).withProperty(INSERTION_DIR, insertion).withProperty(EJECTION_DIR, ejection);

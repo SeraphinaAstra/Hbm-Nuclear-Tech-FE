@@ -165,7 +165,7 @@ public class RecipesCommon {
         }
 
         public ComparableStack(Item item) {
-            this.item = item;
+            this.item = item != null ? item : ModItems.nothing;
             this.stacksize = 1;
             this.meta = 0;
         }
@@ -255,7 +255,7 @@ public class RecipesCommon {
             if (item == null) {
                 MainRegistry.logger.error("ComparableStack has a null item! This is a serious issue!");
                 Thread.dumpStack();
-                item = Items.STICK;
+                item = ModItems.nothing;
             }
 
             ResourceLocation name = Item.REGISTRY.getNameForObject(item);
@@ -263,7 +263,7 @@ public class RecipesCommon {
             if (name == null) {
                 MainRegistry.logger.error("ComparableStack holds an item that does not seem to be registered. How does that even happen?");
                 Thread.dumpStack();
-                item = Items.STICK; //we know sticks have a name, so sure, why not
+                item = ModItems.nothing;
             }
 
             if (name != null)

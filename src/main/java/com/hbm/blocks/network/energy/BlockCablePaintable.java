@@ -218,6 +218,9 @@ public class BlockCablePaintable extends BlockBakeBase implements IToolable, ITo
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntityCablePaintable cable && cable.block != null) {
                 IBlockState disguiseState = cable.block.getStateFromMeta(cable.meta);
+                if (cable.block != this) {
+                    disguiseState = cable.block.getExtendedState(disguiseState, world, pos);
+                }
                 return ext.withProperty(DISGUISED_STATE, disguiseState);
             }
             return ext.withProperty(DISGUISED_STATE, null);

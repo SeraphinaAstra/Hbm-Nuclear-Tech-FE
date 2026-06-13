@@ -326,6 +326,9 @@ public class FluidDuctPaintable extends FluidDuctBase implements IToolable, ILoo
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof TileEntityPipePaintable pipe && pipe.block != null) {
             IBlockState disguiseState = pipe.block.getStateFromMeta(pipe.meta);
+            if (pipe.block != this) {
+                disguiseState = pipe.block.getExtendedState(disguiseState, world, pos);
+            }
             return extState.withProperty(DISGUISED_STATE, disguiseState);
         }
 

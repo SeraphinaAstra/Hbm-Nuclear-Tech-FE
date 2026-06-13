@@ -245,6 +245,9 @@ public class FluidDuctPaintableBlockExhaust extends FluidDuctBase implements ITo
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntityPipeExhaustPaintable pipe && pipe.block != null) {
                 IBlockState disguiseState = pipe.block.getStateFromMeta(pipe.meta);
+                if (pipe.block != this) {
+                    disguiseState = pipe.block.getExtendedState(disguiseState, world, pos);
+                }
                 return ext.withProperty(DISGUISED_STATE, disguiseState);
             }
             return ext.withProperty(DISGUISED_STATE, null);

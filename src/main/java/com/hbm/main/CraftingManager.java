@@ -49,6 +49,8 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.lang.reflect.Field;
+import java.util.List;
 import java.util.Objects;
 
 import static com.hbm.inventory.OreDictManager.*;
@@ -63,6 +65,7 @@ public class CraftingManager {
 		if(!GeneralConfig.recipes) {
 			return;
 		}
+		excludeFromQuarkStairRecrafting();
 		addCrafting();
 		SmeltingRecipes.AddSmeltingRec();
 
@@ -1172,6 +1175,28 @@ public class CraftingManager {
 				new ContainerUpgradeCraftingHandler(new ItemStack(ModBlocks.mass_storage, 1), " C ", "PMP", " P ", 'P', ANY_RESISTANTALLOY.ingot(), 'C', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.ADVANCED), 'M', new ItemStack(ModBlocks.mass_storage_desh))
 						.setRegistryName(new ResourceLocation(Tags.MODID, "mass_storage_upgrade_2"))
 		);
+	}
+
+	/**
+	 * Adds the hbm namespace to Quark's stair-recrafting blacklist so Quark does not inject
+	 * duplicate uncrafting recipes for NTM stairs and slabs (NTM registers its own via addSlabStair).
+	 * Uses reflection so Quark remains an optional dependency.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void excludeFromQuarkStairRecrafting() {
+		try {
+			Class<?> stairRecrafting = Class.forName("vazkii.quark.tweaks.feature.StairRecrafting");
+			Field blacklist = stairRecrafting.getDeclaredField("blacklist");
+			blacklist.setAccessible(true);
+			List<String> list = (List<String>) blacklist.get(null);
+			if (!list.contains(Tags.MODID)) {
+				list.add(Tags.MODID);
+			}
+		} catch (ClassNotFoundException ignored) {
+			// Quark not present
+		} catch (Exception e) {
+			MainRegistry.logger.warn("Failed to add hbm to Quark stair-recrafting blacklist", e);
+		}
 	}
 
 	public static void addSlabStair(Block slab, Block stair, Block block){

@@ -1328,6 +1328,7 @@ public enum HbmEffectNT {
             }
 
             switch (mode) {
+                case "generic" -> {}
                 case "equip" -> HbmAnimations.hotbar[slot] =
                         new HbmAnimations.BlenderAnimation(player.getHeldItem(hand).getItem().getTranslationKey(),
                                 System.currentTimeMillis(), 1, ResourceManager.crucible_equip,

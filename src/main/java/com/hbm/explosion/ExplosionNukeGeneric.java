@@ -328,13 +328,6 @@ public class ExplosionNukeGeneric {
                 } else {
                     world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
                 }
-            } else if (b instanceof BlockBush) {
-                world.setBlockState(pos, Blocks.DEADBUSH.getDefaultState());
-            } else if (b == Blocks.STONE) {
-                world.setBlockState(pos,
-						ModBlocks.sellafield_slaked.getDefaultState());
-            } else if (b == Blocks.BEDROCK) {
-                world.setBlockState(pos, ModBlocks.sellafield_bedrock.getDefaultState());
             } else if (b == Blocks.RED_MUSHROOM_BLOCK) {
                 if (bs.getValue(BlockHugeMushroom.VARIANT) == BlockHugeMushroom.EnumType.STEM) {
                     world.setBlockState(pos, ModBlocks.waste_log.getDefaultState());
@@ -419,22 +412,15 @@ public class ExplosionNukeGeneric {
                 }
             } else if (b == Blocks.CLAY) {
                 world.setBlockState(pos, Blocks.HARDENED_CLAY.getDefaultState());
-            } else if (b instanceof BlockBush) {
-                world.setBlockState(pos, Blocks.DEADBUSH.getDefaultState());
-            } else if (b == Blocks.STONE) {
-                world.setBlockState(pos,
-						ModBlocks.sellafield_slaked.getDefaultState());
-            } else if (b == Blocks.BEDROCK) {
-                world.setBlockState(pos, ModBlocks.sellafield_bedrock.getDefaultState());
             } else if (b == Blocks.MOSSY_COBBLESTONE) {
                 world.setBlockState(pos, Blocks.COAL_ORE.getDefaultState());
             } else if (b == Blocks.COAL_ORE) {
                 rand = random.nextInt(30);
                 if (rand == 1 || rand == 2 || rand == 3) {
-                    world.setBlockState(pos, ModBlocks.ore_sellafield_diamond.getDefaultState(), 3);
+                    world.setBlockState(pos, Blocks.DIAMOND_ORE.getDefaultState());
                 }
                 if (rand == 29) {
-                    world.setBlockState(pos, ModBlocks.ore_sellafield_emerald.getDefaultState(), 3);
+                    world.setBlockState(pos, Blocks.EMERALD_ORE.getDefaultState());
                 }
             } else if (b == Blocks.LOG || b == Blocks.LOG2) {
                 world.setBlockState(pos, ModBlocks.waste_log.getDefaultState());

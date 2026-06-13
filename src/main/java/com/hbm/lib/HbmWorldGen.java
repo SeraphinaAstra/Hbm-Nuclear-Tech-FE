@@ -359,7 +359,7 @@ public class HbmWorldGen implements IWorldGenerator {
             if (MobConfig.enableHives && rand.nextInt(MobConfig.hiveSpawn) == 0 && world.provider.getDimension() == 0) {
                 int x = chunkMinX + rand.nextInt(16);
                 int z = chunkMinZ + rand.nextInt(16);
-                int y = world.getHeight(x, z);
+                int y = world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z)).getY() + 1;
 
                 for (int k = 3; k >= -1; k--) {
                     pos.setPos(x, y - 1 + k, z);
