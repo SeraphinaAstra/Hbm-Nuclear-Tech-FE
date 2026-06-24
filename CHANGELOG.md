@@ -50,6 +50,7 @@
 - Fixed the Radiobox rendering in the wrong orientation when facing west or east, along with a server crash it could cause
 - Fixed the Diesel Generator's fuel-grade tooltip showing internal text instead of proper fuel names
 - Fixed the industrial boiler's groan playing far too loudly, audible from a huge distance
+- Fixed crash when a mod ships immutable SpawnableList to suppress spawns in modded biomes
 ### Changes
 - Realigned which blocks nuclear explosions transmute to match upstream: coal ore once again follows vanilla diamond/emerald behavior and a few other special cases were dropped, while stone and bedrock are still converted through the fallout system
 - Fans can now be toggled between blowing and sucking by using a defuser on them, pulling entities in instead of pushing them away
@@ -78,4 +79,5 @@
 - Recipe-view tooltips for the PUREX, Fusion Reactor and Plasma Forge now show their processing time, power and temperature
 - HBM blocks are now excluded from Quark's stair-recrafting to avoid duplicate or unbalanced recipes
 - Added new metal-impact sound effects
+- Added CTM compat for paintable blocks
 - When Less Bullshit Mode's Full Schrab option is enabled, Schraranium Ingots now display as "Nikonium" with their own texture
