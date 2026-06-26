@@ -1595,16 +1595,7 @@ public class ResourceManager {
     });
 
     static {
-        Class<?> splash;
-        if (Loader.isModLoaded(Compat.ModIds.MODERN_SPLASH)) {
-            try {
-                splash = Class.forName("gkappa.modernsplash.CustomSplash");
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("ModernSplash loaded but failed to find gkappa.modernsplash.CustomSplash", e);
-            }
-        } else {
-            splash = SplashProgress.class;
-        }
+        Class<?> splash = SplashProgress.class;
         splashThreadGetter = MethodHandleHelper.findStaticGetter(splash, "thread", Thread.class);
         splashEnabledGetter = MethodHandleHelper.findStaticGetter(splash, "enabled", boolean.class);
         splashPauseHandle = MethodHandleHelper.findStatic(splash, "pause", MethodType.methodType(void.class));
