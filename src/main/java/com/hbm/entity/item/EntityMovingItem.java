@@ -41,7 +41,7 @@ public class EntityMovingItem extends EntityMovingConveyorObject implements ICon
 
     public boolean attackEntityFrom(DamageSource source, float amount) {
 
-    	if(!world.isRemote) {
+    	if(!world.isRemote && !this.isDead) {
 			world.spawnEntity(new EntityItem(world, posX, posY, posZ, this.getItemStack()));
 	    	this.setDead();
     	}

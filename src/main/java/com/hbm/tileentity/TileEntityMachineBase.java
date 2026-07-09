@@ -154,8 +154,11 @@ public abstract class TileEntityMachineBase extends TileEntityLoadedBase impleme
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        if (compound.hasKey("inventory"))
+        if (compound.hasKey("inventory")) {
+            int expected = inventory.getSlots();
             inventory.deserializeNBT(compound.getCompoundTag("inventory"));
+            if (inventory.getSlots() < expected) resizeInventory(expected);
+        }
         super.readFromNBT(compound);
     }
 

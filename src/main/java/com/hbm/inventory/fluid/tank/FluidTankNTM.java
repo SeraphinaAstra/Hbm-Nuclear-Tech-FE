@@ -135,7 +135,7 @@ public class FluidTankNTM implements IFluidHandler, IFluidTank, Cloneable {
     }
 
     public void setFill(int i) {
-        fluid = i;
+        fluid = Math.max(0, Math.min(i, maxFluid));
     }
 
     public int getMaxFill() {

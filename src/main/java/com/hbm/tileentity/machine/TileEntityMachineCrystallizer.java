@@ -153,7 +153,7 @@ public class TileEntityMachineCrystallizer extends TileEntityMachineBase impleme
                 }
             }
 
-            this.networkPackNT(25);
+            this.networkPackNT(250);
         } else {
 
             prevAngle = angle;

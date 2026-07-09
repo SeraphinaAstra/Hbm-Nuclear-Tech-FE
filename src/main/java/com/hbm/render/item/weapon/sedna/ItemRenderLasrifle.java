@@ -65,7 +65,7 @@ public class ItemRenderLasrifle extends ItemRenderWeaponBase {
 		ResourceManager.lasrifle.renderPart("Gun");
 		ResourceManager.lasrifle.renderPart("Barrel");
 		ResourceManager.lasrifle.renderPart("Stock");
-		ResourceManager.lasrifle.renderPart("Scope");
+		if(hasScope(stack)) ResourceManager.lasrifle.renderPart("Scope");
 
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(0, -0.375, 2.375);

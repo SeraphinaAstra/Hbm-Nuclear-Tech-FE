@@ -186,7 +186,7 @@ public class TileEntityDoorGeneric extends TileEntityLockableBase implements ITi
 
     @Override
     public void onLoad() {
-        if(!(this.getBlockType() instanceof BlockAir)) setDoorType(((BlockDoorGeneric) this.getBlockType()).type);
+        if(this.getBlockType() instanceof BlockDoorGeneric door) setDoorType(door.type);
     }
 
     public boolean tryToggle() {
