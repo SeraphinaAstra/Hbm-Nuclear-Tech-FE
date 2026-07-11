@@ -209,7 +209,32 @@ public class Fluids {
     public static FluidType CONCRETE;
     public static FluidType DHC;
     public static FluidType HYDRAZINE; //This doesnt exist on 1.7 upstream...
-    /* Lagacy names for compatibility purposes */
+    /* Legacy names for compatibility purposes */
+    // RBMK Universal Coolant Fork - _HOT variants
+    public static FluidType MERCURY_HOT;
+    public static FluidType ESTRADIOL_HOT;
+    public static FluidType CARBONDIOXIDE_HOT;
+    public static FluidType HYDROGEN_HOT;
+    public static FluidType OXYGEN_HOT;
+    public static FluidType XENON_HOT;
+    public static FluidType KEROSENE_HOT;
+    public static FluidType NITROGLYCERIN_HOT;
+    public static FluidType DEUTERIUM_HOT;
+    public static FluidType TRITIUM_HOT;
+    public static FluidType PEROXIDE_HOT;
+    public static FluidType AMAT_HOT;
+    public static FluidType SCHRABIDIC_HOT;
+    public static FluidType ASCHRAB_HOT;
+    public static FluidType NITRIC_ACID_HOT;
+    public static FluidType STELLAR_FLUX_HOT;
+    public static FluidType MUSTARDGAS_HOT;
+    public static FluidType PHOSGENE_HOT;
+    public static FluidType WASTEFLUID_HOT;
+    public static FluidType NITAN_HOT;
+    public static FluidType BALEFIRE_HOT;
+    public static FluidType PHEROMONE_HOT;
+    public static FluidType SUNFLOWEROIL_HOT;
+    public static FluidType SULFURIC_ACID_HOT;
     @Deprecated public static FluidType ACID;	//JAOPCA uses this, apparently
 
     public static final HashBiMap<String, FluidType> renameMapping = HashBiMap.create();
@@ -434,6 +459,32 @@ public class Fluids {
         // ^ ^ ^ ^ ^ ^ ^ ^
         //ADD NEW FLUIDS HERE
 
+        // RBMK Universal Coolant Fork - _HOT variant constructions
+        MERCURY_HOT =			new FluidType("MERCURY_HOT",			0xA6A6B8, 2, 0, 0, EnumSymbol.NONE).setTemp(320).addTraits(LIQUID, new FT_Poison(false, 2));
+        ESTRADIOL_HOT =			new FluidType("ESTRADIOL_HOT",			0xE8A0A0, 0, 0, 0, EnumSymbol.NONE).setTemp(90).addTraits(LIQUID);
+        CARBONDIOXIDE_HOT =		new FluidType("CARBONDIOXIDE_HOT",		0x606060, 3, 0, 0, EnumSymbol.ASPHYXIANT).setTemp(200).addTraits(GASEOUS);
+        HYDROGEN_HOT =			new FluidType("HYDROGEN_HOT",			0x6BA3F4, 3, 4, 0, EnumSymbol.NONE).setTemp(200).addTraits(GASEOUS);
+        OXYGEN_HOT =			new FluidType("OXYGEN_HOT",				0xB8D3FF, 3, 0, 0, EnumSymbol.NONE).setTemp(200).addTraits(GASEOUS);
+        XENON_HOT =				new FluidType("XENON_HOT",				0xD07AFF, 0, 0, 0, EnumSymbol.ASPHYXIANT).setTemp(200).addTraits(GASEOUS);
+        KEROSENE_HOT =			new FluidType("KEROSENE_HOT",			0xFF85B2, 1, 2, 0, EnumSymbol.NONE).setTemp(250).addTraits(LIQUID);
+        NITROGLYCERIN_HOT =		new FluidType("NITROGLYCERIN_HOT",		0xB2C6C0, 0, 4, 0, EnumSymbol.NONE).setTemp(200).addTraits(LIQUID);
+        DEUTERIUM_HOT =			new FluidType("DEUTERIUM_HOT",			0x4040FF, 3, 4, 0, EnumSymbol.NONE).setTemp(200).addTraits(GASEOUS);
+        TRITIUM_HOT =			new FluidType("TRITIUM_HOT",			0x4040CC, 3, 4, 0, EnumSymbol.RADIATION).setTemp(200).addTraits(GASEOUS, new FT_VentRadiation(0.001F));
+        PEROXIDE_HOT =			new FluidType("PEROXIDE_HOT",			0xFFE080, 3, 0, 3, EnumSymbol.OXIDIZER).setTemp(150).addTraits(LIQUID);
+        AMAT_HOT =				new FluidType("AMAT_HOT",				0x202020, 5, 0, 5, EnumSymbol.ANTIMATTER).setTemp(9999).addTraits(ANTI, GASEOUS);
+        SCHRABIDIC_HOT =		new FluidType("SCHRABIDIC_HOT",			0x008B8B, 5, 0, 5, EnumSymbol.ACID).setTemp(400).addTraits(LIQUID);
+        ASCHRAB_HOT =			new FluidType("ASCHRAB_HOT",			0xE00000, 5, 0, 5, EnumSymbol.ANTIMATTER).setTemp(500).addTraits(ANTI, GASEOUS);
+        NITRIC_ACID_HOT =		new FluidType("NITRIC_ACID_HOT",		0xDDA030, 3, 0, 2, EnumSymbol.OXIDIZER).setTemp(280).addTraits(LIQUID);
+        STELLAR_FLUX_HOT =		new FluidType("STELLAR_FLUX_HOT",		0xFF40FF, 0, 4, 4, EnumSymbol.ANTIMATTER).setTemp(9000).addTraits(ANTI, GASEOUS);
+        MUSTARDGAS_HOT =		new FluidType("MUSTARDGAS_HOT",			0xD4CF8C, 4, 1, 1, EnumSymbol.NONE).setTemp(220).addTraits(GASEOUS);
+        PHOSGENE_HOT =			new FluidType("PHOSGENE_HOT",			0xE8DDB8, 4, 0, 1, EnumSymbol.NONE).setTemp(200).addTraits(GASEOUS);
+        WASTEFLUID_HOT =		new FluidType("WASTEFLUID_HOT",			0x6E5C00, 2, 0, 1, EnumSymbol.RADIATION).setTemp(350).addTraits(LIQUID, VISCOUS);
+        NITAN_HOT =				new FluidType("NITAN_HOT",				0xA030D0, 2, 4, 1, EnumSymbol.NONE).setTemp(300).addTraits(LIQUID);
+        BALEFIRE_HOT =			new FluidType("BALEFIRE_HOT",			0x40E040, 4, 4, 3, EnumSymbol.RADIATION).setTemp(350).addTraits(LIQUID, VISCOUS);
+        PHEROMONE_HOT =			new FluidType("PHEROMONE_HOT",			0x80C0FF, 0, 0, 0, EnumSymbol.NONE).setTemp(100).addTraits(LIQUID);
+        SUNFLOWEROIL_HOT =		new FluidType("SUNFLOWEROIL_HOT",		0xE0C060, 0, 1, 0, EnumSymbol.NONE).setTemp(200).addTraits(LIQUID);
+        SULFURIC_ACID_HOT =		new FluidType("SULFURIC_ACID_HOT",		0xC8C278, 3, 0, 2, EnumSymbol.ACID).setTemp(300).addTraits(LIQUID);
+
         File folder = MainRegistry.configHbmDir;
         File customTypes = new File(folder.getAbsolutePath() + File.separatorChar + "hbmFluidTypes.json");
         if(!customTypes.exists()) initDefaultFluids(customTypes);
@@ -626,6 +677,32 @@ public class Fluids {
         // LEGACY
         ACID = PEROXIDE;
 
+        // RBMK Universal Coolant Fork - _HOT metaOrder entries
+        metaOrder.add(MERCURY_HOT);
+        metaOrder.add(ESTRADIOL_HOT);
+        metaOrder.add(HYDROGEN_HOT);
+        metaOrder.add(OXYGEN_HOT);
+        metaOrder.add(XENON_HOT);
+        metaOrder.add(KEROSENE_HOT);
+        metaOrder.add(NITROGLYCERIN_HOT);
+        metaOrder.add(DEUTERIUM_HOT);
+        metaOrder.add(TRITIUM_HOT);
+        metaOrder.add(PEROXIDE_HOT);
+        metaOrder.add(AMAT_HOT);
+        metaOrder.add(SCHRABIDIC_HOT);
+        metaOrder.add(ASCHRAB_HOT);
+        metaOrder.add(NITRIC_ACID_HOT);
+        metaOrder.add(STELLAR_FLUX_HOT);
+        metaOrder.add(MUSTARDGAS_HOT);
+        metaOrder.add(PHOSGENE_HOT);
+        metaOrder.add(WASTEFLUID_HOT);
+        metaOrder.add(NITAN_HOT);
+        metaOrder.add(BALEFIRE_HOT);
+        metaOrder.add(PHEROMONE_HOT);
+        metaOrder.add(SUNFLOWEROIL_HOT);
+        metaOrder.add(SULFURIC_ACID_HOT);
+        metaOrder.add(CARBONDIOXIDE_HOT);
+
         for(FluidType custom : customFluids) metaOrder.add(custom);
         for(FluidType custom : foreignFluids) metaOrder.add(custom);
 
@@ -694,6 +771,86 @@ public class Fluids {
 
         THORIUM_SALT.addTraits(new FT_Heatable().setEff(HeatingType.PWR, 1.0D).addStep(400, 1, THORIUM_SALT_HOT, 1), new FT_PWRModerator(2.5D));
         THORIUM_SALT_HOT.addTraits(new FT_Coolable(THORIUM_SALT_DEPLETED, 1, 1, 400).setEff(CoolingType.HEATEXCHANGER, 1.0D));
+
+        // RBMK Universal Coolant Fork - Add HEATEXCHANGER efficiency to existing fluids that already have hot variants
+        HEAVYWATER.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.65D).setEff(HeatingType.PWR, 1.0D).addStep(300, 1, HEAVYWATER_HOT, 1), new FT_PWRModerator(1.25D));
+        SODIUM.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.0D).setEff(HeatingType.PWR, 2.5D).setEff(HeatingType.ICF, 3D).addStep(400, 1, SODIUM_HOT, 1));
+        LEAD.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.0D).setEff(HeatingType.PWR, 0.75D).setEff(HeatingType.ICF, 4D).addStep(800, 1, LEAD_HOT, 1), new FT_PWRModerator(0.75D));
+        THORIUM_SALT.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.0D).setEff(HeatingType.PWR, 1.0D).addStep(400, 1, THORIUM_SALT_HOT, 1), new FT_PWRModerator(2.5D));
+        PERFLUOROMETHYL_COLD.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.0D).setEff(HeatingType.PA, 1.0D).addStep(300, 1, PERFLUOROMETHYL, 1));
+
+        // RBMK Universal Coolant Fork - Second-pass trait wiring for new _HOT fluids
+        MERCURY.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.9D).addStep(320, 350, MERCURY_HOT, 1));
+        MERCURY_HOT.addTraits(new FT_Coolable(MERCURY, 1, 1, 350).setEff(CoolingType.HEATEXCHANGER, 0.9D));
+
+        ESTRADIOL.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.6D).addStep(90, 250, ESTRADIOL_HOT, 1));
+        ESTRADIOL_HOT.addTraits(new FT_Coolable(ESTRADIOL, 1, 1, 250).setEff(CoolingType.HEATEXCHANGER, 0.6D));
+
+        CARBONDIOXIDE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.55D).addStep(200, 150, CARBONDIOXIDE_HOT, 1));
+        CARBONDIOXIDE_HOT.addTraits(new FT_Coolable(CARBONDIOXIDE, 1, 1, 150).setEff(CoolingType.HEATEXCHANGER, 0.55D));
+
+        HYDROGEN.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.5D).addStep(200, 100, HYDROGEN_HOT, 1));
+        HYDROGEN_HOT.addTraits(new FT_Coolable(HYDROGEN, 1, 1, 100).setEff(CoolingType.HEATEXCHANGER, 0.5D));
+
+        OXYGEN.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.55D).addStep(200, 120, OXYGEN_HOT, 1));
+        OXYGEN_HOT.addTraits(new FT_Coolable(OXYGEN, 1, 1, 120).setEff(CoolingType.HEATEXCHANGER, 0.55D));
+
+        XENON.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.45D).addStep(200, 90, XENON_HOT, 1));
+        XENON_HOT.addTraits(new FT_Coolable(XENON, 1, 1, 90).setEff(CoolingType.HEATEXCHANGER, 0.45D));
+
+        KEROSENE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.7D).addStep(250, 300, KEROSENE_HOT, 1));
+        KEROSENE_HOT.addTraits(new FT_Coolable(KEROSENE, 1, 1, 300).setEff(CoolingType.HEATEXCHANGER, 0.7D));
+
+        NITROGLYCERIN.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.5D).addStep(200, 500, NITROGLYCERIN_HOT, 1));
+        NITROGLYCERIN_HOT.addTraits(new FT_Coolable(NITROGLYCERIN, 1, 1, 500).setEff(CoolingType.HEATEXCHANGER, 1.5D));
+
+        DEUTERIUM.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.55D).addStep(200, 130, DEUTERIUM_HOT, 1));
+        DEUTERIUM_HOT.addTraits(new FT_Coolable(DEUTERIUM, 1, 1, 130).setEff(CoolingType.HEATEXCHANGER, 0.55D));
+
+        TRITIUM.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.55D).addStep(200, 140, TRITIUM_HOT, 1));
+        TRITIUM_HOT.addTraits(new FT_Coolable(TRITIUM, 1, 1, 140).setEff(CoolingType.HEATEXCHANGER, 0.55D));
+
+        PEROXIDE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.75D).addStep(150, 320, PEROXIDE_HOT, 1));
+        PEROXIDE_HOT.addTraits(new FT_Coolable(PEROXIDE, 1, 1, 320).setEff(CoolingType.HEATEXCHANGER, 0.75D));
+
+        AMAT.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 9.99D).addStep(9999, 9999, AMAT_HOT, 1));
+        AMAT_HOT.addTraits(new FT_Coolable(AMAT, 1, 1, 9999).setEff(CoolingType.HEATEXCHANGER, 9.99D));
+
+        SCHRABIDIC.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.3D).addStep(400, 600, SCHRABIDIC_HOT, 1));
+        SCHRABIDIC_HOT.addTraits(new FT_Coolable(SCHRABIDIC, 1, 1, 600).setEff(CoolingType.HEATEXCHANGER, 1.3D));
+
+        ASCHRAB.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.35D).addStep(500, 650, ASCHRAB_HOT, 1));
+        ASCHRAB_HOT.addTraits(new FT_Coolable(ASCHRAB, 1, 1, 650).setEff(CoolingType.HEATEXCHANGER, 1.35D));
+
+        NITRIC_ACID.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.1D).addStep(280, 420, NITRIC_ACID_HOT, 1));
+        NITRIC_ACID_HOT.addTraits(new FT_Coolable(NITRIC_ACID, 1, 1, 420).setEff(CoolingType.HEATEXCHANGER, 1.1D));
+
+        STELLAR_FLUX.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.4D).addStep(9000, 700, STELLAR_FLUX_HOT, 1));
+        STELLAR_FLUX_HOT.addTraits(new FT_Coolable(STELLAR_FLUX, 1, 1, 700).setEff(CoolingType.HEATEXCHANGER, 1.4D));
+
+        MUSTARDGAS.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.65D).addStep(220, 200, MUSTARDGAS_HOT, 1));
+        MUSTARDGAS_HOT.addTraits(new FT_Coolable(MUSTARDGAS, 1, 1, 200).setEff(CoolingType.HEATEXCHANGER, 0.65D));
+
+        PHOSGENE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.6D).addStep(200, 190, PHOSGENE_HOT, 1));
+        PHOSGENE_HOT.addTraits(new FT_Coolable(PHOSGENE, 1, 1, 190).setEff(CoolingType.HEATEXCHANGER, 0.6D));
+
+        WASTEFLUID.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.25D).addStep(350, 550, WASTEFLUID_HOT, 1));
+        WASTEFLUID_HOT.addTraits(new FT_Coolable(WASTEFLUID, 1, 1, 550).setEff(CoolingType.HEATEXCHANGER, 1.25D));
+
+        NITAN.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.15D).addStep(300, 480, NITAN_HOT, 1));
+        NITAN_HOT.addTraits(new FT_Coolable(NITAN, 1, 1, 480).setEff(CoolingType.HEATEXCHANGER, 1.15D));
+
+        BALEFIRE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.2D).addStep(350, 520, BALEFIRE_HOT, 1));
+        BALEFIRE_HOT.addTraits(new FT_Coolable(BALEFIRE, 1, 1, 520).setEff(CoolingType.HEATEXCHANGER, 1.2D));
+
+        PHEROMONE.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.55D).addStep(100, 200, PHEROMONE_HOT, 1));
+        PHEROMONE_HOT.addTraits(new FT_Coolable(PHEROMONE, 1, 1, 200).setEff(CoolingType.HEATEXCHANGER, 0.55D));
+
+        SUNFLOWEROIL.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 0.65D).addStep(200, 280, SUNFLOWEROIL_HOT, 1));
+        SUNFLOWEROIL_HOT.addTraits(new FT_Coolable(SUNFLOWEROIL, 1, 1, 280).setEff(CoolingType.HEATEXCHANGER, 0.65D));
+
+        SULFURIC_ACID.addTraits(new FT_Heatable().setEff(HeatingType.HEATEXCHANGER, 1.2D).addStep(300, 450, SULFURIC_ACID_HOT, 1));
+        SULFURIC_ACID_HOT.addTraits(new FT_Coolable(SULFURIC_ACID, 1, 1, 450).setEff(CoolingType.HEATEXCHANGER, 1.2D));
 
         if(idMapping.size() != metaOrder.size()) {
             throw new IllegalStateException("A severe error has occoured during NTM's fluid registering process! The MetaOrder and Mappings are inconsistent! Mapping size: " + idMapping.size()+ " / MetaOrder size: " + metaOrder.size());
