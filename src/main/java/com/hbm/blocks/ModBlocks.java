@@ -1107,7 +1107,6 @@ public class ModBlocks {
 
     public static final Block machine_rotary_furnace = new MachineRotaryFurnace(Material.IRON, "machine_rotary_furnace").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
     public static final Block machine_blast_furnace = new MachineBlastFurnace(Material.ROCK, "machine_blast_furnace").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
-    public static final Block machine_type1_compliance_module = new BlockMachineType1ComplianceModule(Material.IRON, "machine_type1_compliance_module").setCreativeTab(MainRegistry.machineTab);
 
     public static Block machine_fel = new MachineFEL(Material.IRON, "machine_fel").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
 

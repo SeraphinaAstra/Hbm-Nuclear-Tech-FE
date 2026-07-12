@@ -16,6 +16,7 @@ import com.hbm.inventory.material.NTMMaterial;
 import com.hbm.inventory.recipes.loader.SerializableRecipe;
 import com.hbm.items.ItemEnums;
 import com.hbm.items.ItemEnums.EnumCircuitType;
+import com.hbm.items.ItemEnums.EnumPartType;
 import com.hbm.items.ModItems;
 import com.hbm.items.food.ItemFlask;
 import com.hbm.items.machine.ItemBatterySC;
@@ -225,12 +226,19 @@ public class AnvilRecipes extends SerializableRecipe {
 
 		constructionRecipes.add(new AnvilConstructionRecipe(
 				new AStack[] {
-						new ComparableStack(ModBlocks.machine_fensu),
+						new ComparableStack(ModBlocks.machine_battery_redd),
+						new ComparableStack(ModItems.billet_australium_greater, 128),
 						new OreDictStack(CMB.plateWelded(), 128),
-						new OreDictStack(OSMIRIDIUM.plateWelded(), 32),
-						new ComparableStack(ModItems.circuit, 1, EnumCircuitType.ANALOG)
+						new ComparableStack(ModItems.part_generic, 4, EnumPartType.HDE.ordinal()),
+						new ComparableStack(ModItems.ingot_electronium, 32),
+						new OreDictStack(OSMIRIDIUM.plateWelded(), 48),
+						new ComparableStack(ModItems.undefined, 64),
+						new OreDictStack(MAGTUNG.wireDense(), 192),
+						new ComparableStack(ModItems.billet_yharonite, 8),
+						new ComparableStack(ModItems.particle_digamma, 1),
+						new ComparableStack(ModItems.ingot_u238m2, 16)
 				},
-				new AnvilOutput(new ItemStack(ModBlocks.machine_type1_compliance_module))).setTier(4));
+				new AnvilOutput(new ItemStack(ModBlocks.machine_type1_compliance_module))).setTier(1916169));
 
 		boolean exp = GeneralConfig.enableExpensiveMode;
 
