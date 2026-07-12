@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "normal": { "model": "hbm:block/machine_type1_compliance_module" }
+  }
+}

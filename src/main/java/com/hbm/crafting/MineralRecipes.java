@@ -209,6 +209,7 @@ public class MineralRecipes {
         CraftingManager.addRecipeAutoOreShapeless(new ItemStack(ModItems.pellet_rtg_lead), ModItems.billet_pb209, ModItems.billet_pb209, ModItems.billet_pb209, IRON.plate() );
         CraftingManager.addRecipeAutoOreShapeless(new ItemStack(ModItems.pellet_rtg_gold), ModItems.billet_au198, ModItems.billet_au198, ModItems.billet_au198, IRON.plate() );
         CraftingManager.addRecipeAutoOreShapeless(new ItemStack(ModItems.pellet_rtg_americium), ModItems.billet_am241, ModItems.billet_am241, ModItems.billet_am241, IRON.plate() );
+        CraftingManager.addRecipeAutoOreShapeless(new ItemStack(ModItems.pellet_rtg_waste), ModItems.billet_nuclear_waste, ModItems.billet_nuclear_waste, ModItems.billet_nuclear_waste, IRON.plate() );
 
         //There's no need for anvil recycling recipes if you simply set the container item
         CraftingManager.addShapelessAuto(new ItemStack(ModItems.billet_bismuth, 3), new ItemStack(ModItems.pellet_rtg_depleted, 1, EnumDepletedRTGMaterial.BISMUTH.ordinal()) );

@@ -223,6 +223,15 @@ public class AnvilRecipes extends SerializableRecipe {
 				},
 				new AnvilOutput(new ItemStack(ModBlocks.machine_blast_furnace))).setTier(1));
 
+		constructionRecipes.add(new AnvilConstructionRecipe(
+				new AStack[] {
+						new ComparableStack(ModBlocks.machine_fensu),
+						new OreDictStack(CMB.plateWelded(), 128),
+						new OreDictStack(OSMIRIDIUM.plateWelded(), 32),
+						new ComparableStack(ModItems.circuit, 1, EnumCircuitType.ANALOG)
+				},
+				new AnvilOutput(new ItemStack(ModBlocks.machine_type1_compliance_module))).setTier(4));
+
 		boolean exp = GeneralConfig.enableExpensiveMode;
 
 		constructionRecipes.add(new AnvilConstructionRecipe(

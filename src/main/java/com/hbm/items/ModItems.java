@@ -1213,6 +1213,7 @@ public class ModItems {
     public static final Item pellet_rtg_gold = new ItemRTGPellet(200, "pellet_rtg_gold").setDecays(EnumDepletedRTGMaterial.MERCURY, 64728L, 4).setCreativeTab(MainRegistry.controlTab);
     public static final Item pellet_rtg_lead = new ItemRTGPellet(600, "pellet_rtg_lead").setDecays(EnumDepletedRTGMaterial.BISMUTH, 3253L, 6).setCreativeTab(MainRegistry.controlTab);
     public static final Item pellet_rtg_balefire = new ItemRTGPellet(6000, "pellet_rtg_balefire").setDecays(EnumDepletedRTGMaterial.NEPTUNIUM, 1000L, 12).setCreativeTab(MainRegistry.controlTab);
+    public static final Item pellet_rtg_waste = new ItemRTGPellet(8, "pellet_rtg_waste").setDecays(EnumDepletedRTGMaterial.LEAD, 252200400L, 2).setCreativeTab(MainRegistry.controlTab);
     //Generic Items
     public static final Item pellet_coal = new ItemFuel("pellet_coal", 320).setCreativeTab(MainRegistry.partsTab);
     public static final Item chlorine_pinwheel = new ItemFluidContainerInfinite(Fluids.CHLORINE, 1, 2, "chlorine_pinwheel").setCreativeTab(MainRegistry.partsTab);
