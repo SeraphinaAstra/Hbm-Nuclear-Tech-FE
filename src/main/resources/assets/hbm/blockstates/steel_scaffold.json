@@ -1,8 +1,8 @@
 {
   "variants": {
-    "meta=0":  { "model": "hbm:steel_scaffold" },
-    "meta=1":  { "model": "hbm:steel_scaffold" },
-    "meta=2":  { "model": "hbm:steel_scaffold" },
-    "meta=3":  { "model": "hbm:steel_scaffold" }
+    "orient=horizontal_north_south":  { "model": "hbm:steel_scaffold" },
+    "orient=horizontal_east_west":  { "model": "hbm:steel_scaffold" },
+    "orient=vertical_north_south":  { "model": "hbm:steel_scaffold" },
+    "orient=vertical_east_west":  { "model": "hbm:steel_scaffold" }
   }
 }

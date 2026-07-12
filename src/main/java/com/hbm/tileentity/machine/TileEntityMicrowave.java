@@ -7,7 +7,10 @@ import com.hbm.interfaces.ICopiable;
 import com.hbm.inventory.container.ContainerMicrowave;
 import com.hbm.inventory.gui.GUIMicrowave;
 import com.hbm.lib.ForgeDirection;
+import com.hbm.lib.HBMSoundHandler;
 import com.hbm.lib.Library;
+import com.hbm.main.MainRegistry;
+import com.hbm.sound.AudioWrapper;
 import com.hbm.tileentity.IGUIProvider;
 import com.hbm.tileentity.TileEntityMachineBase;
 import io.netty.buffer.ByteBuf;
@@ -20,6 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -39,6 +43,7 @@ public class TileEntityMicrowave extends TileEntityMachineBase implements ITicka
 	public int speed;
 	public static final int maxSpeed = 5;
 	private AxisAlignedBB bb;
+	private AudioWrapper audio;
 	
 	public TileEntityMicrowave() {
 		super(3);
@@ -77,7 +82,43 @@ public class TileEntityMicrowave extends TileEntityMachineBase implements ITicka
 			}
 
 			networkPackNT(50);
+		} else {
+			if(time > 0) {
+				if(audio == null) {
+					audio = createAudioLoop();
+					audio.startSound();
+				} else if(!audio.isPlaying()) {
+					audio = rebootAudio(audio);
+				}
+				audio.updateVolume(getVolume(1F));
+				audio.keepAlive();
+			} else {
+				if(audio != null) {
+					audio.stopSound();
+					audio = null;
+				}
+			}
 		}
+	}
+
+	@Override
+	public AudioWrapper createAudioLoop() {
+		return MainRegistry.proxy.getLoopedSound(
+			HBMSoundHandler.electricHum, SoundCategory.BLOCKS,
+			pos.getX(), pos.getY(), pos.getZ(),
+			1F, 10F, 1.0F);
+	}
+
+	@Override
+	public void onChunkUnload() {
+		if(audio != null) { audio.stopSound(); audio = null; }
+		super.onChunkUnload();
+	}
+
+	@Override
+	public void invalidate() {
+		if(audio != null) { audio.stopSound(); audio = null; }
+		super.invalidate();
 	}
 
 	@Override

@@ -47,49 +47,56 @@ import java.util.Random;
 
 public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IBlockMulti, IDynamicModels {
     public static final PropertyEnum<EnumScaffoldOrient> ORIENT = PropertyEnum.create("orient", EnumScaffoldOrient.class);
-    public static final PropertyEnum<EnumScaffoldVariant> VARIANT = PropertyEnum.create("variant", EnumScaffoldVariant.class);
 
     @SideOnly(Side.CLIENT)
     private TextureAtlasSprite[] sprites;
+    private final EnumScaffoldVariant fixedVariant;
+
+    public BlockScaffold(EnumScaffoldVariant variant) {
+        super(Material.IRON, variant.getName());
+        this.fixedVariant = variant;
+
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+            sprites = new TextureAtlasSprite[1];
+        }
+
+        setDefaultState(this.blockState.getBaseState().withProperty(ORIENT, EnumScaffoldOrient.HORIZONTAL_NS));
+    }
 
     public BlockScaffold(String name) {
         super(Material.IRON, name);
+        this.fixedVariant = EnumScaffoldVariant.STEEL;
 
         if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
-            sprites = new TextureAtlasSprite[EnumScaffoldVariant.VALUES.length];
+            sprites = new TextureAtlasSprite[1];
         }
 
-        setDefaultState(this.blockState.getBaseState().withProperty(ORIENT, EnumScaffoldOrient.HORIZONTAL_NS).withProperty(VARIANT, EnumScaffoldVariant.STEEL));
+        setDefaultState(this.blockState.getBaseState().withProperty(ORIENT, EnumScaffoldOrient.HORIZONTAL_NS));
     }
 
     @Override
     protected @NotNull BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, ORIENT, VARIANT);
+        return new BlockStateContainer(this, ORIENT);
     }
 
     @Override
     public @NotNull IBlockState getStateFromMeta(int meta) {
-        EnumScaffoldVariant variant = EnumScaffoldVariant.VALUES[meta & 3];
-        EnumScaffoldOrient orient = EnumScaffoldOrient.VALUES[(meta >> 2) & 3];
-        return getDefaultState().withProperty(VARIANT, variant).withProperty(ORIENT, orient);
+        EnumScaffoldOrient orient = EnumScaffoldOrient.VALUES[meta & 3];
+        return getDefaultState().withProperty(ORIENT, orient);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int type = state.getValue(VARIANT).ordinal() & 3;
-        int facing = state.getValue(ORIENT).ordinal() & 3;
-        return (facing << 2) | type;
+        return state.getValue(ORIENT).ordinal() & 3;
     }
 
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        return new ItemStack(Item.getItemFromBlock(this), 1, state.getValue(VARIANT).ordinal());
+        return new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(state));
     }
 
     @Override
-    public @NotNull IBlockState getStateForPlacement(@NotNull World world, @NotNull BlockPos pos, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @NotNull EntityLivingBase placer, @NotNull EnumHand hand) {
-        int typeMeta = meta & (EnumScaffoldVariant.VALUES.length - 1);
-        EnumScaffoldVariant variant = EnumScaffoldVariant.VALUES[typeMeta];
+    public @NotNull IBlockState getStateForPlacement(@NotNull World world, @NotNull BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @NotNull EntityLivingBase placer, @NotNull EnumHand hand) {
         EnumScaffoldOrient orient;
 
         if (facing == EnumFacing.UP || facing == EnumFacing.DOWN) {
@@ -101,7 +108,7 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
             orient = EnumScaffoldOrient.VERTICAL_EW;
         }
 
-        return getDefaultState().withProperty(VARIANT, variant).withProperty(ORIENT, orient);
+        return getDefaultState().withProperty(ORIENT, orient);
     }
 
     @Override
@@ -136,21 +143,13 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
 
     @Override
     public int damageDropped(IBlockState state) {
-        return rectify(state.getValue(VARIANT).ordinal());
+        return getMetaFromState(state);
     }
 
-    @Override
-    public void getSubBlocks(@NotNull CreativeTabs tab, @NotNull NonNullList<ItemStack> items) {
-        if (tab == CreativeTabs.SEARCH || tab == this.getCreativeTab()) {
-            for (EnumScaffoldVariant variant : EnumScaffoldVariant.VALUES) {
-                items.add(new ItemStack(this, 1, variant.ordinal()));
-            }
-        }
-    }
 
     @Override
     public int getSubCount() {
-        return EnumScaffoldVariant.VALUES.length;
+        return 1;
     }
 
     @Override
@@ -175,8 +174,8 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
     public void registerModel() {
         Item item = Item.getItemFromBlock(this);
 
-        for (EnumScaffoldVariant variant : EnumScaffoldVariant.VALUES) {
-            ModelLoader.setCustomModelResourceLocation(item, variant.ordinal(), new ModelResourceLocation(Objects.requireNonNull(getRegistryName()), "inventory,meta=" + variant.ordinal()));
+        for (EnumScaffoldOrient orient : EnumScaffoldOrient.VALUES) {
+            ModelLoader.setCustomModelResourceLocation(item, orient.ordinal(), new ModelResourceLocation(Objects.requireNonNull(getRegistryName()), "inventory,meta=" + orient.ordinal()));
         }
     }
 
@@ -186,7 +185,7 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
         return new StateMapperBase() {
             @Override
             protected @NotNull ModelResourceLocation getModelResourceLocation(@NotNull IBlockState state) {
-                return new ModelResourceLocation(loc, "meta=" + state.getValue(VARIANT).ordinal());
+                return new ModelResourceLocation(loc, "meta=" + state.getValue(ORIENT).ordinal());
             }
         };
     }
@@ -194,14 +193,12 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
     @Override
     @SideOnly(Side.CLIENT)
     public void registerSprite(TextureMap map) {
-        for (EnumScaffoldVariant variant : EnumScaffoldVariant.VALUES) {
-            sprites[variant.ordinal()] = map.registerSprite(new ResourceLocation(Objects.requireNonNull(getRegistryName()).getNamespace(), "blocks/" + variant.getName()));
-        }
+        sprites[0] = map.registerSprite(new ResourceLocation(Objects.requireNonNull(getRegistryName()).getNamespace(), "blocks/" + fixedVariant.getName()));
     }
 
     @Override
     public void registerItem() {
-        ItemBlock itemBlock = new BlockScaffoldItem(this);
+        ItemBlock itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(Objects.requireNonNull(getRegistryName()));
         ForgeRegistries.ITEMS.register(itemBlock);
     }
@@ -211,10 +208,10 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
     public void bakeModel(ModelBakeEvent event) {
         ResourceLocation rl = Objects.requireNonNull(getRegistryName());
 
-        for (EnumScaffoldVariant variant : EnumScaffoldVariant.VALUES) {
-            int meta = variant.ordinal();
-            IBakedModel blockModel = BlockScaffoldBakedModel.forBlock((HFRWavefrontObject) ResourceManager.scaffold, sprites[meta]);
-            IBakedModel itemModel = BlockScaffoldBakedModel.forItem((HFRWavefrontObject) ResourceManager.scaffold, sprites[meta]);
+        for (EnumScaffoldOrient orient : EnumScaffoldOrient.VALUES) {
+            int meta = orient.ordinal();
+            IBakedModel blockModel = BlockScaffoldBakedModel.forBlock((HFRWavefrontObject) ResourceManager.scaffold, sprites[0]);
+            IBakedModel itemModel = BlockScaffoldBakedModel.forItem((HFRWavefrontObject) ResourceManager.scaffold, sprites[0]);
 
             ModelResourceLocation mrlBlock = new ModelResourceLocation(rl, "meta=" + meta);
             ModelResourceLocation mrlItem = new ModelResourceLocation(rl, "inventory,meta=" + meta);
@@ -224,28 +221,8 @@ public class BlockScaffold extends BlockBakeBase implements ICustomBlockItem, IB
         }
     }
 
-    private static class BlockScaffoldItem extends ICustomBlockItem.CustomBlockItem implements IModelRegister {
-        private BlockScaffoldItem(Block block) {
-            super(block);
-        }
-
-        @Override
-        public int getMetadata(int damage) {
-            return damage;
-        }
-
-        @Override
-        @SideOnly(Side.CLIENT)
-        public void registerModels() {
-            for (EnumScaffoldVariant variant : EnumScaffoldVariant.VALUES) {
-                int meta = variant.ordinal();
-                ModelLoader.setCustomModelResourceLocation(this, meta, new ModelResourceLocation(Objects.requireNonNull(getRegistryName()), "inventory,meta=" + meta));
-            }
-        }
-    }
-
     public enum EnumScaffoldVariant implements IStringSerializable {
-        STEEL("scaffold_steel"),
+        STEEL("steel_scaffold"),
         RED("scaffold_red"),
         WHITE("scaffold_white"),
         YELLOW("scaffold_yellow");

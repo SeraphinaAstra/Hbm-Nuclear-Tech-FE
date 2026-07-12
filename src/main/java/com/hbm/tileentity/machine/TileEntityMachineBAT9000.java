@@ -22,10 +22,7 @@ public class TileEntityMachineBAT9000 extends TileEntityBarrel {
 	
 	@Override
 	public void checkFluidInteraction() {
-		if(tankNew.getTankType().isAntimatter()) {
-			world.destroyBlock(pos, false);
-			world.newExplosion(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 10, true, true);
-		}
+		// Antimatter-safe: no explosion
 	}
 
 	@Override
