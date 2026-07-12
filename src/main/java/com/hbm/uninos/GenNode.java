@@ -24,10 +24,14 @@ public class GenNode<N extends NodeNet<?, ?, ? extends GenNode<N>, N>> {
     }
 
     public GenNode<N> addConnection(DirPos connection) {
-        DirPos[] newCons = new DirPos[this.connections.length + 1];
-        System.arraycopy(this.connections, 0, newCons, 0, this.connections.length);
-        newCons[newCons.length - 1] = connection;
-        this.connections = newCons;
+        if (this.connections == null) {
+            this.connections = new DirPos[]{connection};
+        } else {
+            DirPos[] newCons = new DirPos[this.connections.length + 1];
+            System.arraycopy(this.connections, 0, newCons, 0, this.connections.length);
+            newCons[newCons.length - 1] = connection;
+            this.connections = newCons;
+        }
         return this;
     }
 
