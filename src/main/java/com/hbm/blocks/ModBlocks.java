@@ -936,6 +936,7 @@ public class ModBlocks {
     public static final Block machine_schrabidium_battery = new MachineBattery(Material.IRON, 25_000_000_000L, "machine_schrabidium_battery").setHardness(5.0F).setResistance(10.0F).setCreativeTab(null);
     public static final Block machine_dineutronium_battery = new MachineBattery(Material.IRON, 1_000_000_000_000L, "machine_dineutronium_battery").setHardness(5.0F).setResistance(10.0F).setCreativeTab(null);
     public static final Block machine_fensu = new MachineFENSU(Material.IRON, "machine_fensu").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
+    public static final Block machine_type1_compliance_module = new BlockMachineType1ComplianceModule("machine_type1_compliance_module").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
 
     public static final Block machine_transformer = new BlockBase(Material.IRON, "machine_transformer").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);
     public static final Block machine_transformer_20 = new BlockBase(Material.IRON, "machine_transformer_20").setHardness(5.0F).setResistance(10.0F).setCreativeTab(MainRegistry.machineTab);

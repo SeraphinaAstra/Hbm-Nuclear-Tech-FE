@@ -1,20 +1,21 @@
 package com.hbm.blocks.machine;
 
-import com.hbm.api.energymk2.IEnergyConnectorBlock;
-import com.hbm.lib.ForgeDirection;
+import com.hbm.blocks.ModBlocks;
 import com.hbm.tileentity.machine.TileEntityType1ComplianceModule;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.world.World;
 
-public class BlockMachineType1ComplianceModule extends BlockMachineBase implements IEnergyConnectorBlock {
+public class BlockMachineType1ComplianceModule extends BlockContainer {
 
-    public BlockMachineType1ComplianceModule(Material material, String name) {
-        super(material, -1, name);
-        this.setHardness(5.0F);
-        this.setResistance(10.0F);
+    public BlockMachineType1ComplianceModule(String name) {
+        super(Material.IRON);
+        this.setTranslationKey(name);
+        this.setRegistryName(name);
+        ModBlocks.ALL_BLOCKS.add(this);
     }
 
     @Override
@@ -23,7 +24,7 @@ public class BlockMachineType1ComplianceModule extends BlockMachineBase implemen
     }
 
     @Override
-    public boolean canConnect(IBlockAccess world, BlockPos pos, ForgeDirection dir) {
-        return true;
+    public EnumBlockRenderType getRenderType(IBlockState state) {
+        return EnumBlockRenderType.MODEL;
     }
 }

@@ -291,12 +291,14 @@ public final class UniNodespace {
         }
 
         private void checkNodeConnection(World world, L node) {
-            for (DirPos con : node.connections) {
-                L conNode = getNode(world, con.getPos());
-                if (conNode != null) {
-                    if (conNode.hasValidNet() && conNode.net == node.net) continue;
-                    if (checkConnection(conNode, con, false)) {
-                        connectToNode(node, conNode);
+            if (node.connections != null) {
+                for (DirPos con : node.connections) {
+                    L conNode = getNode(world, con.getPos());
+                    if (conNode != null) {
+                        if (conNode.hasValidNet() && conNode.net == node.net) continue;
+                        if (checkConnection(conNode, con, false)) {
+                            connectToNode(node, conNode);
+                        }
                     }
                 }
             }
