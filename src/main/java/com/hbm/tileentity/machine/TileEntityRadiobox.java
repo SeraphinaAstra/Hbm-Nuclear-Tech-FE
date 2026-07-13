@@ -12,6 +12,7 @@ import com.hbm.tileentity.TileEntityLoadedBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -63,7 +64,7 @@ public class TileEntityRadiobox extends TileEntityLoadedBase implements ITickabl
             List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.getX() - range, pos.getY() - range, pos.getZ() - range, pos.getX() + range, pos.getY() + range, pos.getZ() + range));
 
             for (EntityLivingBase entity : entities) {
-                if (entity instanceof EntityFBI || entity instanceof EntityFBIDrone || entity instanceof EntityAnimal) continue;
+                if (entity instanceof EntityFBI || entity instanceof EntityFBIDrone || entity instanceof EntityAnimal || entity instanceof EntityPlayer) continue;
 
                 entity.attackEntityFrom(ModDamageSource.enervation, 20.0F);
             }
