@@ -187,4 +187,47 @@ public final class BakedModelTransforms {
 
         return new ItemCameraTransforms(thirdPerson, thirdPerson, firstPerson, firstPerson, head, ItemTransformVec3f.DEFAULT, ground, fixed);
     }
+
+    public static ItemCameraTransforms meteorSwordTransforms() {
+        ItemTransformVec3f thirdPersonRight = new ItemTransformVec3f(
+                new Vector3f(0F, -90F, 55F),
+                new Vector3f(0F, 7F / 16F, 0F),
+                new Vector3f(1.7F, 1.7F, 0.85F)
+        );
+
+        ItemTransformVec3f thirdPersonLeft = new ItemTransformVec3f(
+                new Vector3f(0F, 90F, -55F),
+                new Vector3f(0F, 7F / 16F, 0F),
+                new Vector3f(1.7F, 1.7F, 0.85F)
+        );
+
+        ItemTransformVec3f firstPersonRight = new ItemTransformVec3f(
+                new Vector3f(-20F, -90F, 10F),
+                new Vector3f(1.13F / 16F, 5.2F / 16F, -0.26F / 16F),
+                new Vector3f(1.36F, 1.36F, 0.68F)
+        );
+
+        ItemTransformVec3f firstPersonLeft = new ItemTransformVec3f(
+                new Vector3f(-20F, -90F, -80F),
+                new Vector3f(1.13F / 16F, 5.2F / 16F, -0.26F / 16F),
+                new Vector3f(1.36F, 1.36F, 0.68F)
+        );
+
+        ItemTransformVec3f gui = new ItemTransformVec3f(
+                new Vector3f(0F, 0F, 0F),
+                new Vector3f(0F, 0F, 0F),
+                new Vector3f(1.1F, 1.1F, 1.1F)
+        );
+
+        return new ItemCameraTransforms(
+                thirdPersonLeft,
+                thirdPersonRight,
+                firstPersonLeft,
+                firstPersonRight,
+                ItemTransformVec3f.DEFAULT,
+                gui,
+                ItemTransformVec3f.DEFAULT,
+                ItemTransformVec3f.DEFAULT
+        );
+    }
 }
