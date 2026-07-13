@@ -26,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.init.MobEffects;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
@@ -1051,6 +1052,16 @@ public class Fluids {
         }
 
         return type.getName();
+    }
+
+    public static void writeType(NBTTagCompound nbt, String key, FluidType type) {
+        nbt.setString(key, toNameCompat(type));
+    }
+
+
+    public static FluidType readType(NBTTagCompound nbt, String key) {
+        if (nbt.hasKey(key, 8)) return fromNameCompat(nbt.getString(key)); // 8 = NBT string tag (current + legacy name saves)
+        return fromID(nbt.getInteger(key)); // legacy numeric-ID saves
     }
 
     public static FluidType[] getAll() {
