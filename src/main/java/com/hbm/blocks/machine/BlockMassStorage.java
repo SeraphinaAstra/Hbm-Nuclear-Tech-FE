@@ -58,9 +58,9 @@ public class BlockMassStorage extends BlockContainer implements ILookOverlay, IT
 	}
 
 
-	public int getCapacity() {
-		return this == ModBlocks.mass_storage_wood ? 1000 : this == ModBlocks.mass_storage_iron ? 10_000 : this == ModBlocks.mass_storage_desh ? 100_000 : this == ModBlocks.mass_storage ? 1_000_000 : 0;
-	}
+    public int getCapacity() {
+        return this == ModBlocks.mass_storage_wood ? 1000 : this == ModBlocks.mass_storage_iron ? 10_000 : this == ModBlocks.mass_storage_desh ? 100_000 : this == ModBlocks.mass_storage_paperclip ? 10_000_000 : this == ModBlocks.mass_storage ? 1_000_000 : 0;
+    }
 
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {

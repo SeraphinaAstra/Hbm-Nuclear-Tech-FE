@@ -2,6 +2,7 @@ package com.hbm.tileentity.machine.storage;
 
 import com.hbm.api.redstoneoverradio.IRORInteractive;
 import com.hbm.api.redstoneoverradio.IRORValueProvider;
+import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.threading.PacketThreading;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.inventory.container.ContainerMassStorage;
@@ -215,7 +216,18 @@ public class TileEntityMassStorage extends TileEntityCrateBase implements IBufPa
 
     @Override
     public boolean canInsertItem(int i, ItemStack itemStackIn, int amount) {
-        return !this.isLocked() && i == 0 && (this.getType() == null || (getType().isItemEqual(itemStackIn) && ItemStack.areItemStackTagsEqual(itemStackIn, getType())));
+        if(!this.isLocked() && i == 0) {
+            if(this.getType() == null) {
+                if(world != null && world.getBlockState(pos).getBlock() == ModBlocks.mass_storage_paperclip) {
+                    return itemStackIn.getItem() == ModItems.paperclip;
+                }
+                return true;
+            }
+            if(getType().isItemEqual(itemStackIn) && ItemStack.areItemStackTagsEqual(itemStackIn, getType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

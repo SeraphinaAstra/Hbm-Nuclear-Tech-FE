@@ -1146,6 +1146,7 @@ public class ModItems {
     public static final Item scrap_nuclear = new ItemBakedBase("scrap_nuclear").setCreativeTab(MainRegistry.partsTab);
     public static final Item dust = new ItemBase("dust").setCreativeTab(MainRegistry.partsTab);
     public static final Item dust_tiny = new ItemBakedBase("dust_tiny").setCreativeTab(MainRegistry.partsTab);
+    public static final Item paperclip = new ItemBase("paperclip").setCreativeTab(MainRegistry.partsTab);
     public static final Item fallout = new ItemBakedBase("falloutitem", "fallout").setCreativeTab(MainRegistry.partsTab);
     public static final Item containment_box = new ItemLeadBox("containment_box").setCreativeTab(MainRegistry.consumableTab);
     public static final Item plastic_bag = new ItemPlasticBag("plastic_bag").setCreativeTab(MainRegistry.consumableTab);

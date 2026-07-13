@@ -11,5 +11,6 @@
 - Added a new Nuclear Waste RTG Pellet item, including decay, radiation hazard registration, crafting recipe, localization, model, and texture.
 - Added the Type I Compliance Module endgame power block with MK2 diode energy injection, chunk radiation emission, ambient hum audio, block/tile registration, and anvil construction recipe.
 - Added white, yellow, and red variants to the steel scaffold
+- Paperclips
 ### Performance
 ### Misc

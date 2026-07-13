@@ -321,6 +321,11 @@ public class CraftingManager {
 		addRecipeAuto(new ItemStack(ModBlocks.mass_storage_iron), " L ", "ICI", " I ", 'I', TI.ingot(), 'C', ModBlocks.crate_steel, 'L', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.VACUUM_TUBE) );
 		addRecipeAuto(new ItemStack(ModBlocks.mass_storage_wood), "PPP", "PIP", "PPP", 'P', KEY_PLANKS, 'I', IRON.plate() );
 
+		// Paperclip: incredibly cheap, just a couple of iron nuggets
+		addShapelessAuto(new ItemStack(ModItems.paperclip, 4), IRON.nugget(), IRON.nugget() );
+		// Paperclip Mass Storage: a normal mass storage with paperclips
+		addRecipeAuto(new ItemStack(ModBlocks.mass_storage_paperclip), " I ", "PCP", " I ", 'I', IRON.ingot(), 'C', ModBlocks.crate_steel, 'P', ModItems.paperclip );
+
 		addRecipeAuto(new ItemStack(ModBlocks.machine_autocrafter, 1), "SCS", "MWM", "SCS", 'S', STEEL.plate(), 'C', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.VACUUM_TUBE), 'M', ModItems.motor, 'W', Blocks.CRAFTING_TABLE );
 		addRecipeAuto(new ItemStack(ModBlocks.machine_funnel, 1), "S S", "SRS", " S ", 'S', STEEL.ingot(), 'R', REDSTONE.dust() );
 		addRecipeAuto(new ItemStack(Blocks.HOPPER, 1), "S S", "S S", " S ", 'S', STEEL.ingot() );

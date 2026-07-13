@@ -1,0 +1,7 @@
+{
+	"variants": {
+		"normal": {
+			"model": "hbm:mass_storage_paperclip"
+		}
+	}
+}
