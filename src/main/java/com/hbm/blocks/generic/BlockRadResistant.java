@@ -4,6 +4,7 @@ import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
 import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,7 +16,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BlockRadResistant extends Block implements IRadResistantBlock {
+public class BlockRadResistant extends Block implements IRadResistantBlock, IRadShielding {
 
 	public BlockRadResistant(Material materialIn, String s) {
 		super(materialIn);
@@ -23,6 +24,15 @@ public class BlockRadResistant extends Block implements IRadResistantBlock {
 		this.setTranslationKey(s);
 
 		ModBlocks.ALL_BLOCKS.add(this);
+    }
+
+    // ---- IRadShielding (new occlusion system) ----
+    // Fast path: all BlockRadResistant instances are state-independent.
+    // Uses getHVLDirect to avoid any possibility of circular calls through
+    // the public getHVLPerBlock(IBlockState) API.
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return ShieldingRegistry.getHVLDirect(this);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.hbm.blocks.generic;
 
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -13,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BlockStorageCrateRadResistant extends BlockStorageCrate implements IRadResistantBlock {
+public class BlockStorageCrateRadResistant extends BlockStorageCrate implements IRadResistantBlock, IRadShielding {
 
 	public BlockStorageCrateRadResistant(Material materialIn, String s) {
 		super(materialIn, s);
@@ -31,10 +33,20 @@ public class BlockStorageCrateRadResistant extends BlockStorageCrate implements 
 		super.breakBlock(worldIn, pos, state);
 	}
 
+    // ---- IRadShielding (new occlusion system) ----
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return ShieldingRegistry.getHVLDirect(this);
+    }
+
 	@Override
 	public void addInformation(@NotNull ItemStack stack, World player, @NotNull List<String> tooltip, @NotNull ITooltipFlag advanced) {
 		super.addInformation(stack, player, tooltip, advanced);
 		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+		String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+		if (hvlLine != null) {
+			tooltip.add("§2" + hvlLine);
+		}
 		float hardness = this.getExplosionResistance(null);
 		if(hardness > 50){
 			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));

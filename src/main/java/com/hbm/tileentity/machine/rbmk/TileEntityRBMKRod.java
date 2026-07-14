@@ -10,6 +10,7 @@ import com.hbm.handler.neutron.NeutronNodeWorld;
 import com.hbm.handler.neutron.NeutronStream;
 import com.hbm.handler.neutron.RBMKNeutronHandler;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.inventory.container.ContainerRBMKRod;
 import com.hbm.inventory.control_panel.types.DataValue;
@@ -150,8 +151,12 @@ public class TileEntityRBMKRod extends TileEntityRBMKSlottedBase implements IRBM
 				this.heat += rod.provideHeat(world, stack, heat, 1.0D);
 				inventory.setStackInSlot(0, stack);
 				
+				// Discrete point-source emission: register with the occlusion system
+				// when actively emitting and unshielded by a lid. Old continuous
+				// chunk-rad call removed. Strength mirrors the old rad value;
+				// tuning pending balancing pass.
 				if(!this.hasLid()) {
-                    ChunkRadiationManager.proxy.incrementRad(world, pos, (float) (fluxQuantity * 0.05F), (float) (fluxQuantity * 10F));
+                    RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, fluxQuantity * 0.05D));
                 }
 				
 				super.update();

@@ -2,7 +2,9 @@ package com.hbm.blocks.generic;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
@@ -23,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class BlockNTMGlassPane extends BlockPane implements IRadResistantBlock {
+public class BlockNTMGlassPane extends BlockPane implements IRadResistantBlock, IRadShielding {
     private final boolean doesDrop;
     private final boolean isRadResistant;
 
@@ -80,12 +82,25 @@ public class BlockNTMGlassPane extends BlockPane implements IRadResistantBlock {
         return this.isRadResistant;
     }
 
+    // ---- IRadShielding (new occlusion system) ----
+    // Only shields when isRadResistant is true (same as legacy behavior).
+    // Uses getHVLDirect to avoid circular call through the public API.
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        if (!this.isRadResistant) return 0D;
+        return ShieldingRegistry.getHVLDirect(this);
+    }
+
     @Override
     public void addInformation(@NotNull ItemStack stack, World player, @NotNull List<String> tooltip, @NotNull ITooltipFlag advanced) {
         super.addInformation(stack, player, tooltip, advanced);
         float hardness = this.getExplosionResistance(null);
         if (this.isRadResistant) {
             tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+            String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+            if (hvlLine != null) {
+                tooltip.add("§2" + hvlLine);
+            }
         }
         if (hardness > 50) {
             tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));

@@ -154,7 +154,7 @@ public class HbmLivingCapability {
 
         @Override
         public void setRads(double rads) {
-            this.rads = MathHelper.clamp(rads, 0D, 2500D);
+            this.rads = MathHelper.clamp(rads, 0D, 3000D);
         }
 
 		@Override
@@ -169,12 +169,12 @@ public class HbmLivingCapability {
 
         @Override
         public void increaseRads(double rads) {
-            this.rads = MathHelper.clamp(this.rads + rads, 0D, 2500D);
+            this.rads = MathHelper.clamp(this.rads + rads, 0D, 3000D);
         }
 
         @Override
         public void decreaseRads(double rads) {
-            this.rads = MathHelper.clamp(this.rads - rads, 0D, 2500D);
+            this.rads = MathHelper.clamp(this.rads - rads, 0D, 3000D);
         }
 
 		@Override

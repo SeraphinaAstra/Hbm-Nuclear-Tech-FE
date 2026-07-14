@@ -35,6 +35,14 @@ public final class ShieldingRegistry {
 
     private ShieldingRegistry() {}
 
+    /** Direct map lookup, no interface recursion. For block classes that
+     *  implement IRadShielding and need to look up their own HVL without going through
+     *  the public getHVLPerBlock() which may call back into the same block instance. */
+    public static double getHVLDirect(Block block) {
+        Double v = HVL_BY_BLOCK.get(block);
+        return v != null ? v : 0.0D;
+    }
+
     public static void registerShielding(Block block, double hvlPerBlock) {
         HVL_BY_BLOCK.put(block, hvlPerBlock);
     }
@@ -42,11 +50,15 @@ public final class ShieldingRegistry {
     /** Fast path, no tile entity lookup. Use for the common (non-door) case. */
     public static double getHVLPerBlock(IBlockState state) {
         Block block = state.getBlock();
+        // Check the static map first to avoid circular calls for blocks that
+        // implement IRadShielding only for tooltip purposes (the interface
+        // method may delegate back here). Map lookup is also faster.
+        Double v = HVL_BY_BLOCK.get(block);
+        if (v != null) return v;
         if (block instanceof IRadShielding) {
             return ((IRadShielding) block).getHVLPerBlock(state);
         }
-        Double v = HVL_BY_BLOCK.get(block);
-        return v != null ? v : 0.0D;
+        return 0.0D;
     }
 
     /** Full path — required for state-dependent blocks (doors/hatches/vaults). */
@@ -87,9 +99,47 @@ public final class ShieldingRegistry {
         registerShielding(ModBlocks.block_australium, 2.00D);   // densest material in NTM, ceiling value
         registerShielding(ModBlocks.block_lead, 0.39D);
         registerShielding(ModBlocks.block_steel, 0.27D);
-        registerShielding(ModBlocks.block_desh, 0.186D);        // weaker than steel/lead — intentional, Desh isn't a shielding-purpose alloy despite being high-tech
+        registerShielding(ModBlocks.block_desh, 0.186D);        // weaker than steel/lead — intentional
         registerShielding(ModBlocks.brick_concrete, 0.08D);
         registerShielding(ModBlocks.brick_concrete_mossy, 0.08D);
+
+        // ---- Additional IRadResistantBlock block types now in the new system ----
+        // These shared BlockRadResistant instances use the block map so the map
+        // lookup takes priority over the interface circular call.
+        registerShielding(ModBlocks.reinforced_light, 0.06D);   // light concrete variant
+        registerShielding(ModBlocks.reinforced_brick, 0.10D);
+        registerShielding(ModBlocks.brick_compound, 0.12D);
+        registerShielding(ModBlocks.cmb_brick_reinforced, 0.20D); // composite, ~15% per block
+        registerShielding(ModBlocks.hazmat, 0.02D);
+        registerShielding(ModBlocks.block_boron, 0.08D);
+        registerShielding(ModBlocks.concrete_pillar, 0.08D);
+        registerShielding(ModBlocks.ducrete_smooth, 0.10D);
+        registerShielding(ModBlocks.ducrete, 0.10D);
+        registerShielding(ModBlocks.brick_ducrete, 0.12D);      // "ducrete_brick"
+        registerShielding(ModBlocks.reinforced_ducrete, 0.12D);
+        registerShielding(ModBlocks.block_niter_reinforced, 0.06D);
+        registerShielding(ModBlocks.block_tcalloy, 0.27D);
+        registerShielding(ModBlocks.reinforced_lamp_off, 0.10D); // same resistance as reinforced_brick
+
+        // Glass variants (only when isRadResistant=true, enforced in class)
+        registerShielding(ModBlocks.reinforced_laminate, 0.05D);
+        registerShielding(ModBlocks.reinforced_glass, 0.05D);
+        registerShielding(ModBlocks.reinforced_glass_pane, 0.02D); // half of full block
+
+        // Door/hatch family: sealed-state HHVL reflects heavy steel/iron plate construction.
+        // These blocks query the 3-arg IRadShielding overload and only report HVL when closed.
+        registerShielding(ModBlocks.blast_door, 0.27D);            // steel-tier
+        registerShielding(ModBlocks.vault_door, 0.18D);           // vault = high mass, lower than lead due to steel-lattice design
+        registerShielding(ModBlocks.silo_hatch, 0.27D);           // steel-tier
+        registerShielding(ModBlocks.sliding_blast_door, 0.27D);   // steel-tier
+
+        // cable_coated_rad_resistant, fluid_pipe_solid_rad_resistant, storage_crate_rad_resistant
+        // inherit their HVL from the block map via getHVLPerBlock(state) — no separate entry needed.
+
+        // DummyBlockBlast (blast door frame) — not registered on its own; raycast hits the
+        // door block itself. DummyBlockSilent / DummyBlockVault / DummyBlockSiloHatch are
+        // likewise unregistered blocks (they qualify as "not in the map = 0 HVL").
+
         // brick_concrete_cracked / brick_concrete_broken intentionally NOT registered (0 HVL) —
         // they were never IRadResistantBlock in the legacy system either; damaged concrete doesn't shield.
     }

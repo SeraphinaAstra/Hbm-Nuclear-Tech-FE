@@ -2,10 +2,12 @@ package com.hbm.blocks.machine;
 
 import com.hbm.api.block.IToolable.ToolType;
 import com.hbm.blocks.ModBlocks;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IBomb;
 import com.hbm.interfaces.IDoor;
 import com.hbm.interfaces.IMultiBlock;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.items.ModItems;
 import com.hbm.items.tool.ItemLock;
 import com.hbm.items.tool.ItemTooling;
@@ -36,7 +38,7 @@ import net.minecraftforge.fml.common.Optional;
 import java.util.List;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlastDoor extends BlockContainer implements IBomb, IMultiBlock, IPartialSealableBlock, IRadResistantBlock {
+public class BlastDoor extends BlockContainer implements IBomb, IMultiBlock, IPartialSealableBlock, IRadResistantBlock, IRadShielding {
 
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	
@@ -61,19 +63,28 @@ public class BlastDoor extends BlockContainer implements IBomb, IMultiBlock, IPa
 		return false;
 	}
 
-	@Override
-	public boolean isRadResistant(World worldIn, BlockPos blockPos) {
-		// Door should be rad resistant only when closed
-		if (worldIn != null) {
-			TileEntity entity = worldIn.getTileEntity(blockPos);
-			if (entity != null) {
-				if (IDoor.class.isAssignableFrom(entity.getClass())) {
-					return ((IDoor) entity).getState() == IDoor.DoorState.CLOSED;
-				}
-			}
-		}
-		return false;
-	}
+    // ---- IRadShielding (new occlusion system) ----
+    // BlastDoor has two relevant states: open (0 HVL) and closed (~0.27 HVL,
+    // same as steel). The 3-arg overload queries the tile entity to determine
+    // door state. The 1-arg overload (no world/pos) returns 0 — callers that
+    // cannot resolve state-dependent shielding should assume no occlusion.
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return 0D; // state-independent fast path defaults to 0; raycast must use 3-arg
+    }
+
+    @Override
+    public double getHVLPerBlock(World world, BlockPos pos, IBlockState state) {
+        if (world != null) {
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity != null && IDoor.class.isAssignableFrom(entity.getClass())) {
+                if (((IDoor) entity).getState() == IDoor.DoorState.CLOSED) {
+                    return ShieldingRegistry.getHVLDirect(this); // steel-tier
+                }
+            }
+        }
+        return 0D;
+    }
 
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {

@@ -13,6 +13,7 @@ import com.hbm.entity.mob.EntityRADBeast;
 import com.hbm.handler.HbmKeybinds.EnumKeybind;
 import com.hbm.handler.pollution.PollutionHandler;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.handler.threading.PacketThreading;
 import com.hbm.interfaces.IArmorModDash;
 import com.hbm.interfaces.Untested;
@@ -27,6 +28,7 @@ import com.hbm.packet.toclient.HbmPlayerSyncPacket;
 import com.hbm.particle.helper.FlameCreator;
 import com.hbm.particle.helper.HbmEffectNT;
 import com.hbm.potion.HbmPotion;
+import com.hbm.saveddata.ARSTimerSavedData;
 import com.hbm.saveddata.AuxSavedData;
 import com.hbm.util.ArmorRegistry;
 import com.hbm.util.ContaminationUtil;
@@ -172,6 +174,17 @@ public class EntityEffectHandler {
                 ContaminationUtil.contaminate(entity, HazardType.RADIATION, ContaminationType.CREATIVE, (float) (radD / 20D));
             }
 
+            // Discrete point-source occlusion dose (Phase 2/3): registered sources
+            // (reactors, RBMK rods, corium, barrels, core meltdown) contribute
+            // via inverse-square + raycast occlusion. This replaces the old
+            // per-tick incrementRad() calls those sources used to make.
+            if (entity instanceof EntityLivingBase living) {
+                double occlusionDose = RadiationOcclusion.getDoseForEntity(world, living);
+                if (occlusionDose > 0D) {
+                    ContaminationUtil.contaminate(living, HazardType.RADIATION, ContaminationType.CREATIVE, (float) occlusionDose);
+                }
+            }
+
 			if(entity.world.isRaining() && RadiationConfig.cont > 0 && AuxSavedData.getThunder(entity.world) > 0 && entity.world.canBlockSeeSky(pos)) {
 				ContaminationUtil.contaminate(entity, HazardType.RADIATION, ContaminationType.CREATIVE, RadiationConfig.cont * 0.0005F);
 			}
@@ -206,6 +219,33 @@ public class EntityEffectHandler {
 				if((world.getTotalWorldTime() + r1200) % 1200 == 1) {
 					world.playSound(null, ix, iy, iz, HBMSoundHandler.vomit, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 					entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 60, 19));
+				}
+			}
+
+			// ---- ARS death timer tick ----
+			if (entity instanceof EntityPlayer p) {
+				ARSTimerSavedData timerData = ARSTimerSavedData.get(world);
+				if (timerData.tick(p.getUniqueID())) {
+					// Timer expired — player dies from ARS.
+					p.attackEntityFrom(ModDamageSource.radiation, Float.MAX_VALUE);
+					if (p.getHealth() > 0) {
+						p.setHealth(0);
+						p.onDeath(ModDamageSource.radiation);
+					}
+				}
+			}
+
+			// ---- Natural decay below committed threshold (< 300 RAD) ----
+			// Exponential decay matching RadiationSystemNT's own half-life style.
+			// Applied only when total dose < 300 and no death timer is active.
+			if (HbmLivingProps.getRadiation(entity) < 300.0D) {
+				boolean timerActive = entity instanceof EntityPlayer pe && ARSTimerSavedData.get(world).getTimerTicks(pe.getUniqueID()) > 0;
+				if (!timerActive) {
+					double current = HbmLivingProps.getRadiation(entity);
+					if (current > 0D) {
+						double decayed = current * Math.exp(Math.log(0.5D) / (RadiationConfig.radHalfLifeSeconds * 20.0D));
+						HbmLivingProps.setRadiation(entity, decayed);
+					}
 				}
 			}
 
@@ -284,48 +324,54 @@ public class EntityEffectHandler {
             return;
         }
 
-        if (eRad < 200) return;
+        // ---- ARS death-timer / debuff system replaces old instant-kill ladder ----
+        // Creature mutation lines above are kept; the section from here replaces
+        // what used to be the player-facing 200/400/600/800/1000 instant-kill ladder.
+        // No instant death. Death timer lives in ARSTimerSavedData (WorldSavedData)
+        // and is ticked down in handleRadiation().
         if (eRad > 2500000) HbmLivingProps.setRadiation(entity, 2500000);
 
-        if (eRad >= 1000) {
-            entity.attackEntityFrom(ModDamageSource.radiation, 1000F);
-            HbmLivingProps.setRadiation(entity, 0);
+        // Only humanoid players get the ARS timer
+        if (!(entity instanceof EntityPlayer)) return;
+        EntityPlayer player = (EntityPlayer) entity;
+        World w = player.world;
+        ARSTimerSavedData timerData = ARSTimerSavedData.get(w);
 
-            if (entity.getHealth() > 0) {
-                entity.setHealth(0);
-                entity.onDeath(ModDamageSource.radiation);
-            }
-
-            if (entity instanceof EntityPlayerMP) AdvancementManager.grantAchievement((EntityPlayerMP) entity, AdvancementManager.achRadDeath);
-        } else if (eRad >= 800) {
-            if (rng % 300 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 30, 0));
-            if (rng % 300 == 50) entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 10 * 20, 2));
-            if (rng % 300 == 100) entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 10 * 20, 2));
-            if (rng % 500 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 3 * 20, 2));
-            if (rng % 700 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 3 * 20, 1));
+        // --- Debuffs by band, using new spec thresholds ---
+        if (eRad >= 1200) {
+            // Guaranteed lethal band. Timer speeds up proportionally from ~6000->3000 ticks.
+            int timer = (int) (6000 / (1 + (eRad - 1200) / 1800.0));
+            timerData.setTimerTicks(player.getUniqueID(), timer);
+            if (rng % 100 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 20, 2));
+            if (rng % 100 == 25)  entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 10 * 20, 3));
+            if (rng % 100 == 50)  entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 10 * 20, 2));
+            if (rng % 150 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 3 * 20, 2));
+            if (rng % 200 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 3 * 20, 1));
+        } else if (eRad >= 700) {
+            // Severe band, ~24000->10000 ticks
+            int timer = (int) (24000 / (1 + (eRad - 700) / 500.0));
+            timerData.setTimerTicks(player.getUniqueID(), timer);
+            if (rng % 200 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 20, 1));
+            if (rng % 200 == 50)  entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 10 * 20, 2));
+            if (rng % 200 == 100) entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 10 * 20, 1));
+            if (rng % 300 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 3 * 20, 1));
+            if (rng % 400 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.WITHER, 3 * 20, 0));
             if (rng % 300 == 150) entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 5 * 20, 3));
-            if (rng % 300 == 200) entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 5 * 20, 3));
-        } else if (eRad >= 600) {
-            if (rng % 300 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 30, 0));
-            if (rng % 300 == 50) entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 10 * 20, 2));
-            if (rng % 300 == 100) entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 10 * 20, 2));
-            if (rng % 500 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.POISON, 3 * 20, 1));
-            if (rng % 300 == 150) entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 3 * 20, 3));
-            if (rng % 400 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 6 * 20, 2));
-        } else if (eRad >= 400) {
-            if (rng % 300 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 30, 0));
-            if (rng % 500 == 50) entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 5 * 20, 0));
+        } else if (eRad >= 300) {
+            // Committed band — baseline 60k tick death timer.
+            timerData.setTimerTicks(player.getUniqueID(), 60000);
+            if (rng % 300 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 30, 0));
+            if (rng % 300 == 50)  entity.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 5 * 20, 0));
             if (rng % 300 == 100) entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 5 * 20, 1));
-            if (rng % 500 == 150) entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 3 * 20, 2));
-            if (rng % 600 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 4 * 20, 1));
-        } else if (eRad >= 200) {
-            if (rng % 300 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 20, 0));
-            if (rng % 500 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 5 * 20, 0));
-            if (rng % 700 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 3 * 20, 2));
-            if (rng % 800 == 0) entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 4 * 20, 0));
-            if (entity instanceof EntityPlayerMP) {
-                AdvancementManager.grantAchievement((EntityPlayerMP) entity, AdvancementManager.achRadPoison);
-            }
+            if (rng % 500 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 3 * 20, 2));
+            if (rng % 600 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 4 * 20, 0));
+        } else {
+            // Below committed — cancel any active timer, mild debuffs only.
+            timerData.cancelTimer(player.getUniqueID());
+            if (rng % 300 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 5 * 20, 0));
+            if (rng % 500 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 5 * 20, 0));
+            if (rng % 700 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 3 * 20, 2));
+            if (rng % 800 == 0)   entity.addPotionEffect(new PotionEffect(MobEffects.MINING_FATIGUE, 4 * 20, 0));
         }
     }
 

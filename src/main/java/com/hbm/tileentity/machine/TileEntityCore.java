@@ -5,6 +5,7 @@ import com.hbm.entity.effect.EntityCloudFleijaRainbow;
 import com.hbm.entity.logic.EntityNukeExplosionMK3;
 import com.hbm.handler.ArmorUtil;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.inventory.container.ContainerCore;
 import com.hbm.inventory.fluid.FluidType;
@@ -87,6 +88,10 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 
             meltdownTick = false;
 
+            // Discrete point-source emission: clear any stale registration each tick;
+            // re-register below only while a meltdown is actually occurring.
+            RadiationOcclusion.deregisterSource(world, pos);
+
             ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
             lastTickValid =
                     provider.chunkExists(chunkX, chunkZ) &&
@@ -142,7 +147,9 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 
                 } else {
                     meltdownTick = true;
-                    ChunkRadiationManager.proxy.incrementRad(world, new BlockPos(pos.getX(), pos.getY(), pos.getZ()), 100);
+                    // Old continuous chunk-rad emission replaced by a registered
+                    // discrete source. Strength mirrors the old rad value; tuning pending.
+                    RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 100));
                 }
             }
 

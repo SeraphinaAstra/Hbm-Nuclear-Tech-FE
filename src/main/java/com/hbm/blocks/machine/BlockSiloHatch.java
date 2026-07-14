@@ -3,8 +3,10 @@ package com.hbm.blocks.machine;
 import com.hbm.api.block.IToolable.ToolType;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IBomb;
 import com.hbm.interfaces.IDoor;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.interfaces.IMultiBlock;
 import com.hbm.interfaces.IRadResistantBlock;
 import com.hbm.items.ModItems;
@@ -37,7 +39,7 @@ import net.minecraftforge.fml.common.Optional;
 import java.util.List;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock, IPartialSealableBlock {
+public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock, IPartialSealableBlock, IRadShielding {
 
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	
@@ -210,6 +212,23 @@ public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock
 		super.breakBlock(world, pos, state);
 	}
 
+    // ---- IRadShielding (new occlusion system) ----
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return 0D; // must use 3-arg overload for state-dependent check
+    }
+
+    @Override
+    public double getHVLPerBlock(World world, BlockPos pos, IBlockState state) {
+        if (world != null) {
+            TileEntity entity = world.getTileEntity(pos);
+            if (entity instanceof IDoor door && door.getState() == IDoor.DoorState.CLOSED) {
+                return ShieldingRegistry.getHVLDirect(this);
+            }
+        }
+        return 0D;
+    }
+
 	@Override
 	public boolean isRadResistant(World worldIn, BlockPos blockPos){
 
@@ -230,6 +249,10 @@ public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock
 	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
 		float hardness = this.getExplosionResistance(null);
 		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+		String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+		if (hvlLine != null) {
+			tooltip.add("§2" + hvlLine);
+		}
 		if(hardness > 50){
 			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));
 		}

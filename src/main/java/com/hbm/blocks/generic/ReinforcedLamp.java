@@ -2,7 +2,9 @@ package com.hbm.blocks.generic;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,7 +19,7 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Random;
 
-public class ReinforcedLamp extends Block implements IRadResistantBlock {
+public class ReinforcedLamp extends Block implements IRadResistantBlock, IRadShielding {
 
 	private final boolean isOn;
 
@@ -82,10 +84,21 @@ public class ReinforcedLamp extends Block implements IRadResistantBlock {
 		return new ItemStack(ModBlocks.reinforced_lamp_off);
 	}
 
+    // ---- IRadShielding (new occlusion system) ----
+    // Both on/off states have the same HVL (material is identical).
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return ShieldingRegistry.getHVLDirect(this);
+    }
+
 	@Override
 	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
 		float hardness = this.getExplosionResistance(null);
 		tooltip.add("§2[Radiation Shielding]§r");
+		String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+		if (hvlLine != null) {
+			tooltip.add("§2" + hvlLine);
+		}
 		if(hardness > 50){
 			tooltip.add("§6Blast Resistance: "+hardness+"§r");
 		}

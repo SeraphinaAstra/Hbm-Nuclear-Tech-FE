@@ -3,7 +3,9 @@ package com.hbm.blocks.generic;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.BlockRotatedPillar;
 import net.minecraft.block.SoundType;
@@ -16,7 +18,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BlockRadResistantPillar extends BlockRotatedPillar implements IRadResistantBlock{
+public class BlockRadResistantPillar extends BlockRotatedPillar implements IRadResistantBlock, IRadShielding{
 
     public BlockRadResistantPillar(Material materialIn, String s, SoundType sound) {
         this(materialIn, s);
@@ -32,6 +34,12 @@ public class BlockRadResistantPillar extends BlockRotatedPillar implements IRadR
 
 
     }
+    // ---- IRadShielding (new occlusion system) ----
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return ShieldingRegistry.getHVLDirect(this);
+    }
+
     @Override
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         RadiationSystemNT.markSectionForRebuild(worldIn, pos);
@@ -44,13 +52,17 @@ public class BlockRadResistantPillar extends BlockRotatedPillar implements IRadR
         super.breakBlock(worldIn, pos, state);
     }
 
-    @Override
-    public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
-        super.addInformation(stack, player, tooltip, advanced);
-        tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
-        float hardness = this.getExplosionResistance(null);
-        if(hardness > 50){
-            tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));
-        }
-    }
+	@Override
+	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+		super.addInformation(stack, player, tooltip, advanced);
+		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+		String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+		if (hvlLine != null) {
+			tooltip.add("§2" + hvlLine);
+		}
+		float hardness = this.getExplosionResistance(null);
+		if(hardness > 50){
+			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));
+		}
+	}
 }

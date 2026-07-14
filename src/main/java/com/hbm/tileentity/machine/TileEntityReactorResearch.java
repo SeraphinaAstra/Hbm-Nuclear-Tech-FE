@@ -3,6 +3,7 @@ package com.hbm.tileentity.machine;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.config.MobConfig;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.interfaces.IControlReceiver;
 import com.hbm.inventory.RecipesCommon;
@@ -144,9 +145,14 @@ public class TileEntityReactorResearch extends TileEntityMachineBase implements 
                 this.explode();
             }
 
-            if(level > 0 && heat > 0 && !(blocksRad(pos.add(1, 1, 0)) && blocksRad(pos.add(-1, 1, 0)) && blocksRad(pos.add(0, 1, 1)) && blocksRad(pos.add(0, 1, -1)))) {
+            // Discrete point-source emission: register with the occlusion system.
+            // The old hardcoded blocksRad() 4-adjacent-block check is removed — the
+            // raycast occlusion (RadiationOcclusion) now decides whether a nearby
+            // player is actually shielded by intervening blocks. Strength mirrors the
+            // old per-tick chunk-rad value; tuning pending balancing pass.
+            if(level > 0 && heat > 0) {
                 float rad = (float) heat / (float) maxHeat * 50F;
-                ChunkRadiationManager.proxy.incrementRad(world, pos, rad, (float) 25000);
+                RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, rad));
             }
 
             networkPackNT(150);
@@ -214,22 +220,6 @@ public class TileEntityReactorResearch extends TileEntityMachineBase implements 
 		Block b = world.getBlock(x, y, z);
 		TileEntity te = world.getTileEntity(x, y, z);
 	}*/
-
-    private boolean blocksRad(BlockPos pos) {
-
-        Block b = world.getBlockState(pos).getBlock();
-
-        if((b == Blocks.WATER || b == Blocks.FLOWING_WATER) && world.getBlockState(pos).getBlock().getMetaFromState(world.getBlockState(pos)) == 0)
-            return true;
-
-        if(b == ModBlocks.block_lead || b == ModBlocks.block_desh || b == ModBlocks.reactor_research || b == ModBlocks.machine_reactor_breeding)
-            return true;
-
-        if(b.getExplosionResistance(null) >= 100)
-            return true;
-
-        return false;
-    }
 
     private int[] getNeighboringSlots(int id) {
 

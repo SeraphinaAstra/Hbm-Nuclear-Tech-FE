@@ -4,9 +4,11 @@ import com.hbm.api.block.IToolable.ToolType;
 import com.hbm.blocks.BlockDummyable;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IDoor;
-import com.hbm.interfaces.IKeypadHandler;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
+import com.hbm.interfaces.IKeypadHandler;
 import com.hbm.items.tool.ItemTooling;
 import com.hbm.lib.ForgeDirection;
 import com.hbm.lib.Library;
@@ -37,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResistantBlock, IPartialSealableBlock {
+public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResistantBlock, IPartialSealableBlock, IRadShielding {
 
 	public BlockSlidingBlastDoor(Material materialIn, String s) {
 		super(materialIn, s, true);
@@ -75,18 +77,40 @@ public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResista
 		return null;
 	}
 
+    // ---- IRadShielding (new occlusion system) ----
+    // Sliding blast door is a multiblock: raycast uses the 3-arg overload which
+    // resolves the core tile entity to check door state.
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return 0D; // must use 3-arg overload for multiblock state-dependent check
+    }
+
+    @Override
+    public double getHVLPerBlock(World world, BlockPos pos, IBlockState state) {
+        if (world != null) {
+            int[] corePos = findCore(world, pos.getX(), pos.getY(), pos.getZ());
+            if (corePos != null) {
+                TileEntity core = world.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
+                if (core instanceof IDoor door && door.getState() == IDoor.DoorState.CLOSED) {
+                    return ShieldingRegistry.getHVLDirect(this);
+                }
+            }
+        }
+        return 0D;
+    }
+
 	@Override
-	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
-		float hardness = this.getExplosionResistance(null);
-		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
-		if(hardness > 50){
-			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));
+	public boolean isRadResistant(World worldIn, BlockPos blockPos) {
+		if (worldIn != null) {
+			int[] corePos = findCore(worldIn, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if(corePos != null){
+				TileEntity core = worldIn.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
+				if (core != null && IDoor.class.isAssignableFrom(core.getClass())) {
+					return ((IDoor) core).getState() == IDoor.DoorState.CLOSED;
+				}
+			}
 		}
-		if(this == ModBlocks.sliding_blast_door_legacy){
-			tooltip.add(I18nUtil.resolveKey("desc.varwin"));
-		} else if(this == ModBlocks.sliding_blast_door_2){
-			tooltip.add(I18nUtil.resolveKey("desc.varkey"));
-		}
+		return false;
 	}
 	
 	@Override
@@ -217,24 +241,20 @@ public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResista
 	@Override
 	public void breakBlock(@NotNull World worldIn, @NotNull BlockPos pos, IBlockState state) {
 		RadiationSystemNT.markSectionForRebuild(worldIn, pos);
-		super.breakBlock(worldIn, pos, state);
+		super.onBlockAdded(worldIn, pos, state);
 	}
 
 	@Override
-	public boolean isRadResistant(World world, BlockPos blockPos){
-
-		if (world != null) {
-			int[] corePos = findCore(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			if(corePos != null){
-				TileEntity core = world.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
-				if (core != null && IDoor.class.isAssignableFrom(core.getClass())) {
-					// Doors should be rad resistant only when closed
-					return ((IDoor) core).getState() == IDoor.DoorState.CLOSED;
-				}
-			}
+	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
+		float hardness = this.getExplosionResistance(null);
+		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+		String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+		if (hvlLine != null) {
+			tooltip.add("§2" + hvlLine);
 		}
-
-		return false;
+		if(hardness > 50){
+			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));
+		}
 	}
 
 }

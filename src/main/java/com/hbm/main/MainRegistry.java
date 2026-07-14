@@ -21,6 +21,7 @@ import com.hbm.explosion.ExplosionNukeGeneric;
 import com.hbm.handler.*;
 import com.hbm.handler.imc.IMCHandler;
 import com.hbm.handler.pollution.PollutionHandler;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.handler.radiation.RadiationSystemNT;
 import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.handler.threading.BombForkJoinPool;
@@ -223,6 +224,7 @@ public class MainRegistry {
         MinecraftForge.TERRAIN_GEN_BUS.register(new ModEventHandlerImpact());
         MinecraftForge.EVENT_BUS.register(new PollutionHandler());
         MinecraftForge.EVENT_BUS.register(new DamageResistanceHandler());
+        MinecraftForge.EVENT_BUS.register(new RadiationOcclusion.BlockChangeInvalidator());
 
         if (event.getSide() == Side.CLIENT) {
             HbmKeybinds keyHandler = new HbmKeybinds();

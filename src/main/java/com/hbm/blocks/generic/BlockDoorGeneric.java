@@ -4,9 +4,11 @@ import com.hbm.api.block.IToolable;
 import com.hbm.blocks.BlockDummyable;
 import com.hbm.handler.MultiblockHandlerXR;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.interfaces.IBomb;
 import com.hbm.interfaces.IDoor;
 import com.hbm.interfaces.IRadResistantBlock;
+import com.hbm.interfaces.IRadShielding;
 import com.hbm.items.ModItems;
 import com.hbm.items.tool.ItemLock;
 import com.hbm.items.tool.ItemTooling;
@@ -39,7 +41,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlockDoorGeneric extends BlockDummyable implements IRadResistantBlock, IPartialSealableBlock, IBomb, IToolable {
+public class BlockDoorGeneric extends BlockDummyable implements IRadResistantBlock, IPartialSealableBlock, IBomb, IToolable, IRadShielding {
 
 	public DoorDecl type;
 	public final boolean isRadResistant;
@@ -98,17 +100,37 @@ public class BlockDoorGeneric extends BlockDummyable implements IRadResistantBlo
 		return true;
 	}
 
-	@Override
-	public void fillSpace(World world, int x, int y, int z, ForgeDirection dir, int o) {
-		MultiblockHandlerXR.fillSpace(world, x + dir.offsetX * o, y + dir.offsetY * o, z + dir.offsetZ * o, getDimensions(), this, dir);
+    // ---- IRadShielding (new occlusion system) ----
+    @Override
+    public double getHVLPerBlock(IBlockState state) {
+        return 0D; // must use 3-arg overload for multiblock state-dependent check
+    }
 
-		if(type.getExtraDimensions() != null) for(int[] dims : type.getExtraDimensions()) {
-			MultiblockHandlerXR.fillSpace(world, x + dir.offsetX * o, y + dir.offsetY * o, z + dir.offsetZ * o, dims, this, dir);
+    @Override
+    public double getHVLPerBlock(World world, BlockPos pos, IBlockState state) {
+        if (world != null) {
+            int[] corePos = findCore(world, pos.getX(), pos.getY(), pos.getZ());
+            if (corePos != null) {
+                TileEntity core = world.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
+                if (core instanceof IDoor door && door.getState() == IDoor.DoorState.CLOSED) {
+                    return ShieldingRegistry.getHVLDirect(this);
+                }
+            }
+        }
+        return 0D;
+    }
+
+	@Override
+	public boolean isRadResistant(World worldIn, BlockPos blockPos) {
+		if (worldIn != null) {
+			int[] corePos = findCore(worldIn, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if(corePos != null){
+				TileEntity core = worldIn.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
+				if (core != null && IDoor.class.isAssignableFrom(core.getClass())) {
+					return ((IDoor) core).getState() == IDoor.DoorState.CLOSED;
+				}
+			}
 		}
-	}
-
-	@Override
-	public boolean isFullCube(IBlockState state) {
 		return false;
 	}
 
@@ -226,30 +248,16 @@ public class BlockDoorGeneric extends BlockDummyable implements IRadResistantBlo
 		super.breakBlock(worldIn, pos, state);
 	}
 
-	@Override
-	public boolean isRadResistant(World world, BlockPos blockPos){
-		if (!this.isRadResistant)
-			return false;
-
-		if (world != null) {
-			int[] corePos = findCore(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			if(corePos != null){
-				TileEntity core = world.getTileEntity(new BlockPos(corePos[0], corePos[1], corePos[2]));
-				if (core != null && IDoor.class.isAssignableFrom(core.getClass())) {
-					// Doors should be rad resistant only when closed
-					return ((IDoor) core).getState() == IDoor.DoorState.CLOSED;
-				}
-			}
-		}
-
-		return false;
-	}
 
 	@Override
 	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
 		float hardness = this.getExplosionResistance(null);
 		if(this.isRadResistant){
 			tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
+			String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+			if (hvlLine != null) {
+				tooltip.add("§2" + hvlLine);
+			}
 		}
 		if(hardness > 50){
 			tooltip.add("§6" + I18nUtil.resolveKey("trait.blastres", hardness));

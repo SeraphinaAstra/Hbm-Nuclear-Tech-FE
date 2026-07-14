@@ -110,8 +110,22 @@ public class HbmPotion extends Potion {
 			ContaminationUtil.contaminate(entity, HazardType.RADIATION, ContaminationType.CREATIVE, (float)(level + 1F) * 0.05F);
 		}
 		else if(this == radaway) {
-			if(entity.hasCapability(HbmLivingCapability.EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null))
-				entity.getCapability(HbmLivingCapability.EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null).decreaseRads((level+1)*0.05F);
+			// ARS rework per spec §3.1: below 300 RAD, radaway reduces rads directly.
+			// At/above 300 RAD, it extends the death timer instead.
+			if(entity.hasCapability(HbmLivingCapability.EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null)) {
+				double rads = entity.getCapability(HbmLivingCapability.EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null).getRads();
+				if(rads < 300.0D) {
+					// Below committed threshold: reduce rads directly (old behavior).
+					entity.getCapability(HbmLivingCapability.EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null).decreaseRads((level+1)*0.05F);
+				} else {
+					// At/above committed threshold: extend death timer instead.
+					if(entity instanceof EntityPlayer player) {
+						com.hbm.saveddata.ARSTimerSavedData timerData = com.hbm.saveddata.ARSTimerSavedData.get(player.world);
+						// Placeholder extension: +200 ticks per radaway tick (tunable).
+						timerData.extendTimer(player.getUniqueID(), 200);
+					}
+				}
+			}
 		}
         else if(this == bang) {
 			if(CompatibilityConfig.isWarDim(entity.world)){

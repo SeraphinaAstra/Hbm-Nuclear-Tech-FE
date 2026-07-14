@@ -3,6 +3,7 @@ package com.hbm.blocks.generic;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.explosion.ExplosionNukeGeneric;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
@@ -45,6 +46,8 @@ public class YellowBarrel extends BaseBarrel {
 	}
 
 	public void explode(World p_149695_1_, int x, int y, int z) {
+		// Barrel is destroyed — drop its registered radiation source.
+		RadiationOcclusion.deregisterSource(p_149695_1_, new BlockPos(x, y, z));
 		if(rand.nextInt(3) == 0) {
 			p_149695_1_.setBlockState(new BlockPos(x, y, z), ModBlocks.toxic_block.getDefaultState());
 		} else {
@@ -59,10 +62,14 @@ public class YellowBarrel extends BaseBarrel {
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
 		super.updateTick(world, pos, state, rand);
 
+		// Discrete point-source emission: register with the occlusion system
+		// each tick (idempotent keyed by pos). Old continuous
+		// chunk-rad call removed. Strength mirrors the old rad value;
+		// tuning pending balancing pass.
 		if(this == ModBlocks.yellow_barrel){
-            ChunkRadiationManager.proxy.incrementRad(world, pos, 5F, 75F);
+            RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 5));
         } else {
-            ChunkRadiationManager.proxy.incrementRad(world, pos, 0.5F, 5F);
+            RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 0.5));
         }
 
         world.scheduleUpdate(pos, this, this.tickRate(world));

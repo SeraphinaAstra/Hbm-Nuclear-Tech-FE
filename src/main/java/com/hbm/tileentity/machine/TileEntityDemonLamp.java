@@ -1,5 +1,6 @@
 package com.hbm.tileentity.machine;
 
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.render.amlfrom1710.Vec3;
 import com.hbm.util.ContaminationUtil;
@@ -25,46 +26,22 @@ public class TileEntityDemonLamp extends TileEntity implements ITickable {
 	@Override
 	public void update(){
 		if(!world.isRemote) {
-			radiate(world, pos.getX(), pos.getY(), pos.getZ());
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	private void radiate(World world, int x, int y, int z){
-
-		float rads = 100000F;
-		double range = 25D;
-
-		List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(x + 0.5, y + 0.5, z + 0.5, x + 0.5, y + 0.5, z + 0.5).grow(range, range, range));
-		for(EntityLivingBase e : entities) {
-
-			Vec3 vec = Vec3.createVectorHelper(e.posX - (x + 0.5), (e.posY + e.getEyeHeight()) - (y + 0.5), e.posZ - (z + 0.5));
-			double len = vec.length();
-			vec = vec.normalize();
-
-			float res = 0;
-
-			for(int i = 1; i < len; i++) {
-
-				int ix = (int)Math.floor(x + 0.5 + vec.xCoord * i);
-				int iy = (int)Math.floor(y + 0.5 + vec.yCoord * i);
-				int iz = (int)Math.floor(z + 0.5 + vec.zCoord * i);
-				
-				BlockPos pos = new BlockPos(ix, iy, iz);
-				IBlockState state = world.getBlockState(pos);
-				res += state.getBlock().getExplosionResistance(null);
-			}
-
-			if(res < 1)
-				res = 1;
-
-			float eRads = rads;
-			eRads /= (float)res;
-			eRads /= (float)(len * len);
-
-			ContaminationUtil.contaminate(e, HazardType.RADIATION, ContaminationType.CREATIVE, eRads);
-			if(len < 2) {
-				e.attackEntityFrom(DamageSource.IN_FIRE, 100);
+			// Discrete point-source emission: register with the new occlusion system.
+			// The old ad-hoc ray walk using getExplosionResistance() is replaced
+			// by ShieldingRegistry HVL values via RadiationOcclusion.
+			// Dose application happens in EntityEffectHandler.handleRadiation()
+			// which calls RadiationOcclusion.getDoseForEntity().
+			// The instant-damage radius (< 2 blocks) is kept for point-blank
+			// lethality. Strength = 100000F * 20 (converted to per-tick equivalent,
+			// matching the old ~100000 RAD/s at range 1).
+			RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 2000000D, 0.5D));
+			// Short-range lethal damage (kept as-is — combat damage, not occluded dose)
+			List<EntityLivingBase> entities = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2, pos.getX() + 3, pos.getY() + 3, pos.getZ() + 3));
+			for(EntityLivingBase e : entities) {
+				double dist = e.getDistance(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+				if(dist < 2) {
+					e.attackEntityFrom(DamageSource.IN_FIRE, 100);
+				}
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import com.hbm.interfaces.AutoRegister;
 import com.hbm.main.MainRegistry;
 import com.hbm.particle.helper.HbmEffectNT;
 import com.hbm.potion.HbmPotion;
+import com.hbm.saveddata.ARSTimerSavedData;
 import com.hbm.util.ContaminationUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -45,11 +46,18 @@ public class TileEntityDeconRad extends TileEntity implements ITickable {
 							((EntityLivingBase)e).removePotionEffect(HbmPotion.radiation);
 						}
 					}
-					if(e.hasCapability(EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null)){
-						if(radRemove > 0.0F){
+				if(e.hasCapability(EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null)){
+					double currentRads = e.getCapability(EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null).getRads();
+					if(radRemove > 0.0F) {
+						if (currentRads < 300.0D) {
+							// Below committed threshold: reduce rads directly.
 							e.getCapability(EntityHbmPropsProvider.ENT_HBM_PROPS_CAP, null).decreaseRads(radRemove);
+						} else if (e instanceof EntityPlayer player) {
+							// At/above committed threshold: extend death timer instead.
+							ARSTimerSavedData.get(player.world).extendTimer(player.getUniqueID(), (int) (radRemove * 400));
 						}
 					}
+				}
 					if(e instanceof EntityPlayer){
 						ContaminationUtil.neutronActivateInventory((EntityPlayer)e, -0.005F, decayRate);
 						((EntityPlayer)e).inventoryContainer.detectAndSendChanges();

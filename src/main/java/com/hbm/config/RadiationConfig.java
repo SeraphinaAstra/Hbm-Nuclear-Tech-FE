@@ -49,6 +49,7 @@ public class RadiationConfig {
     public static int radTickRate = 1;
     public static double radHalfLifeSeconds = 120D;
     public static double radDiffusivity = 10.0;
+    public static double occlusionMaxRange = 64.0;
 
     public static void loadFromConfig(Configuration config) {
 		// afterrain duration
@@ -97,6 +98,7 @@ public class RadiationConfig {
         radTickRate = CommonConfig.createConfigInt(config, CommonConfig.CATEGORY_RADIATION, "7.99_CE_01_radTickRate", "How many ticks between each radiation system updates. 1 = once per tick", 1);
         radHalfLifeSeconds = CommonConfig.createConfigDouble(config, CommonConfig.CATEGORY_RADIATION, "7.99_CE_02_radHalfLifeSeconds", "The half life of chunk radiation in seconds", 120);
         radDiffusivity = CommonConfig.createConfigDouble(config, CommonConfig.CATEGORY_RADIATION, "7.99_CE_03_radDiffusivity", "The diffusivity of chunk radiation.", 10.0);
+        occlusionMaxRange = CommonConfig.createConfigDouble(config, CommonConfig.CATEGORY_RADIATION, "7.99_CE_04_occlusionMaxRange", "Max distance (blocks) for raycast occlusion of discrete radiation sources. Sources beyond this are ignored as a perf safety valve.", 64.0);
 
 		hazardRate = CommonConfig.createConfigInt(config, CommonConfig.CATEGORY_HAZARD, "14.99_CE_04_hazardRate", "Ticks between application of effects for the hazards", 5);
 		disableAsbestos = CommonConfig.createConfigBool(config, CommonConfig.CATEGORY_HAZARD, "14.99_CE_05_disableAsbestos", "Setting it true makes Asbestos Hazard to do nothing", false);

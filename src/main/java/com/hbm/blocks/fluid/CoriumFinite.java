@@ -2,6 +2,7 @@ package com.hbm.blocks.fluid;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.lib.ModDamageSource;
 import com.hbm.util.ContaminationUtil;
 import com.hbm.util.ContaminationUtil.ContaminationType;
@@ -80,8 +81,13 @@ public class CoriumFinite extends BlockFluidFinite implements IFluidFog {
     @Override
     public void updateTick(@NotNull World world, @NotNull BlockPos pos, @NotNull IBlockState state, @NotNull Random random) {
         super.updateTick(world, pos, state, random);
-        ChunkRadiationManager.proxy.incrementRad(world, pos, 50);
+        // Discrete point-source emission: register with the occlusion system each
+        // tick (idempotent keyed by pos). Old continuous chunk-rad call
+        // removed. Strength mirrors the old flat rad value; tuning pending.
+        RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 50));
         if (!world.isRemote && random.nextInt(10) == 0 && world.getBlockState(pos.down()).getBlock() != this) {
+            // Fluid converts to a solid block — the fluid source is gone, drop it.
+            RadiationOcclusion.deregisterSource(world, pos);
             if (random.nextInt(3) == 0) {
                 world.setBlockState(pos, ModBlocks.block_corium.getDefaultState());
             } else {
