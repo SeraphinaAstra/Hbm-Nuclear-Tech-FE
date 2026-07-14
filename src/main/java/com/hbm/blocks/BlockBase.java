@@ -1,5 +1,6 @@
 package com.hbm.blocks;
 
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.main.MainRegistry;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.Block;
@@ -49,6 +50,16 @@ public class BlockBase extends Block {
         float hardness = getExplosionResistance(null);
         if (hardness > 50) {
             list.add(TextFormatting.GOLD + I18nUtil.resolveKey("trait.blastres", hardness));
+        }
+
+        // Raycast occlusion shielding (ShieldingRegistry) — separate from the legacy
+        // IRadResistantBlock pocket-diffusion wall system, which BlockBase does not
+        // implement. Intentionally NOT shown with the "[Radiation Shielding]" bracket
+        // label used by BlockRadResistant, since that label implies ambient-pocket
+        // wall behavior this block doesn't have.
+        String hvlLine = ShieldingRegistry.getHVLTooltipLine(this.getDefaultState());
+        if (hvlLine != null) {
+            list.add(TextFormatting.DARK_GREEN + hvlLine);
         }
     }
 }

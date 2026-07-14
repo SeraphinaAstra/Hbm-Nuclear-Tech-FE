@@ -22,6 +22,7 @@ import com.hbm.handler.*;
 import com.hbm.handler.imc.IMCHandler;
 import com.hbm.handler.pollution.PollutionHandler;
 import com.hbm.handler.radiation.RadiationSystemNT;
+import com.hbm.handler.radiation.ShieldingRegistry;
 import com.hbm.handler.threading.BombForkJoinPool;
 import com.hbm.handler.threading.PacketThreading;
 import com.hbm.hazard.HazardData;
@@ -234,6 +235,7 @@ public class MainRegistry {
         CapabilityManager.INSTANCE.register(HbmCapability.IHBMData.class, new HbmCapability.HBMDataStorage(), HbmCapability.HBMData.FACTORY);
         Fluids.init();
         ModFluids.init();
+        ShieldingRegistry.initDefault();
         BulletConfigSyncingUtil.loadConfigsForSync();
         CellularDungeonFactory.init();
         Satellite.register();

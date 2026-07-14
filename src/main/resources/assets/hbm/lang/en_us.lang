@@ -8300,6 +8300,7 @@ trait.pwrflux=PWR Flux Multiplier
 trait.radResistance=Radiation resistance: %s
 trait.radioactive=Radioactive
 trait.radshield=Radiation Shielding
+trait.radshield.hvl=Blocks %s%% radiation per block
 trait.rbmk.coreTemp=Core temp: %s
 trait.rbmk.depletion=Depletion: %s
 trait.rbmk.diffusion=Diffusion: %s
