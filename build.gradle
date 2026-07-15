@@ -1556,7 +1556,7 @@ if (customMavenPublishUrl) {
     afterEvaluate {
         String publishedVersion = modVersion
         String baseVersion = System.getenv('RELEASE_VERSION') ?: publishedVersion
-        String baseArtifactId = 'ntm-ce'
+        String baseArtifactId = 'ntm-fe'
         String baseGroupId = System.getenv('ARTIFACT_GROUP_ID') ?: project.mavenArtifactGroup
         def java25DevJarTask = tasks.named(usesShadowedDependencies.toBoolean() ? "shadowJarJava25" : "jarJava25")
         def java25ReobfJarTask = tasks.named("reobfJarJava25")
