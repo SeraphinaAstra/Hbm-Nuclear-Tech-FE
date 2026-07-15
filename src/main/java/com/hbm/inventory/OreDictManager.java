@@ -294,6 +294,8 @@ public class OreDictManager {
      * RARE METALS
      */
     public static final DictFrame AUSTRALIUM = new DictFrame("Australium");
+    public static final DictFrame TASMANITE = new DictFrame("Tasmanite");
+    public static final DictFrame AYERITE = new DictFrame("Ayerite");
     /*
      * RARE EARTHS
      */

@@ -649,6 +649,7 @@ public class CraftingManager {
 		addShapelessAuto(new ItemStack(ModItems.sat_resonator), ModBlocks.sat_resonator );
 		addShapelessAuto(new ItemStack(ModItems.sat_foeq), ModBlocks.sat_foeq );
 		addShapelessAuto(new ItemStack(ModItems.geiger_counter), ModBlocks.geiger );
+		addShapelessAuto(new ItemStack(ModItems.cancer_screener), ModItems.dosimeter, ModItems.nuclear_waste );
 		addRecipeAuto(new ItemStack(ModItems.sat_interface), "ISI", "PCP", "PAP", 'I', STEEL.ingot(), 'S', STAR.ingot(), 'P', ModItems.plate_polymer, 'C', ModItems.sat_chip, 'A', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.ADVANCED) );
 		addRecipeAuto(new ItemStack(ModItems.sat_coord), "SII", "SCA", "SPP", 'I', STEEL.ingot(), 'S', STAR.ingot(), 'P', ModItems.plate_polymer, 'C', ModItems.sat_chip, 'A', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.ADVANCED) );
 		addRecipeAuto(new ItemStack(ModBlocks.machine_transformer), "SCS", "MDM", "SCS", 'S', IRON.ingot(), 'D', MINGRADE.ingot(), 'M',ModItems.coil_copper, 'C', DictFrame.fromOne(ModItems.circuit, EnumCircuitType.CAPACITOR) );

@@ -96,6 +96,18 @@ public class Mats {
 	public static final NTMMaterial MAT_SCHRABIDATE	= makeSmeltable(12600,		SBD,		0x77C0D7, 0x39005E, 0x6589B4).setAutogen(DUST, DENSEWIRE, CASTPLATE, BLOCK).m();
 	public static final NTMMaterial MAT_SCHRARANIUM	= makeSmeltable(12601,		SRN,		0x2B3227, 0x2B3227, 0x24AFAC).setAutogen(BLOCK).m();
 	public static final NTMMaterial MAT_GHIORSIUM	= makeSmeltable(12836,		GH336,		0xF4EFE1, 0x2A3306, 0xC6C6A1).setAutogen(NUGGET, BILLET, BLOCK).m();
+	public static final NTMMaterial MAT_AUSTRALIUM_LESSER	= makeSmeltable(12628,		TASMANITE,	0x32FFFF, 0x005C5C, 0x32FFFF).setAutogen(NUGGET, BILLET, DUST, BLOCK).m();
+	public static final NTMMaterial MAT_AUSTRALIUM_GREATER	= makeSmeltable(12629,		AYERITE,	0xA2E6E0, 0x00433D, 0x72B6B0).setAutogen(NUGGET, BILLET, DUST, BLOCK).m();
+	
+	/** Fractional melting: dustAustralium splits 5:1 into Tasmanite (lesser, 83.3%) and Ayerite (greater, 16.6%) */
+	public static void registerFractionalMelting() {
+		List<MaterialStack> split = new ArrayList<>();
+		split.add(new MaterialStack(MAT_AUSTRALIUM_LESSER, 5));
+		split.add(new MaterialStack(MAT_AUSTRALIUM_GREATER, 1));
+		materialOreEntries.put("dustAustralium", split);
+	}
+	
+	static { registerFractionalMelting(); }
 
 	//Base metals
 	public static final NTMMaterial MAT_TITANIUM		= makeSmeltable(2200,		TI,				0xF7F3F2, 0x4F4C4B, 0xA99E79).setAutogen(FRAGMENT, DUST, PLATE, DENSEWIRE, CASTPLATE, WELDEDPLATE, SHELL, BLOCK).m();
@@ -181,6 +193,8 @@ public class Mats {
 	public static NTMMaterial makeNonSmeltable(int id, DictFrame dict, int solidColorLight, int solidColorDark, int moltenColor) {
 		return new NTMMaterial(id, dict).smeltable(SmeltingBehavior.NOT_SMELTABLE).setSolidColor(solidColorLight, solidColorDark).setMoltenColor(moltenColor);
 	}
+
+	static { registerFractionalMelting(); }
 
 	public static DictFrame df(String string) {
 		return new DictFrame(string);

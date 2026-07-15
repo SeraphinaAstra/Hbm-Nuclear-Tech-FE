@@ -4,6 +4,8 @@ import com.hbm.capability.HbmLivingCapability.EntityHbmProps;
 import com.hbm.capability.HbmLivingProps;
 import com.hbm.config.CompatibilityConfig;
 import com.hbm.config.GeneralConfig;
+import com.hbm.saveddata.ARSTimerSavedData;
+import com.hbm.saveddata.CancerSavedData;
 import com.hbm.entity.effect.EntityNukeTorex;
 import com.hbm.entity.grenade.EntityGrenadeUniversal;
 import com.hbm.items.weapon.grenade.ItemGrenadeFilling.EnumGrenadeFilling;
@@ -54,6 +56,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ContaminationUtil {
 
@@ -165,7 +168,7 @@ public class ContaminationUtil {
 		String radsPrefix = getPreffixFromRad(rads);
 		
 		player.sendMessage(new TextComponentString("===== ☢ ").appendSibling(new TextComponentTranslation("dosimeter.title")).appendSibling(new TextComponentString(" ☢ =====")).setStyle(new Style().setColor(TextFormatting.GOLD)));
-		player.sendMessage(new TextComponentTranslation("geiger.recievedRad").appendSibling(new TextComponentString(" " + radsPrefix + (limit ? ">" : "") + rads + " RAD/s")).setStyle(new Style().setColor(TextFormatting.YELLOW)));
+		player.sendMessage(new TextComponentTranslation("geiger.recievedRad").appendSibling(new TextComponentString(" " + radsPrefix + (limit ? ">" : "") + rads + " Roentgen/s")).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 	}
 
 	public static String getTextColorFromPercent(double percent){
@@ -222,6 +225,74 @@ public class ContaminationUtil {
 		player.sendMessage(new TextComponentTranslation("lung_scanner.player_mku").setStyle(new Style().setColor(TextFormatting.GRAY)).appendSibling(new TextComponentTranslation(contagion > 0 ? "lung_scanner.pos" : "lung_scanner.neg" )));
 		if(contagion > 0){
 			player.sendMessage(new TextComponentTranslation("lung_scanner.player_mku_duration").setStyle(new Style().setColor(TextFormatting.GRAY)).appendSibling(new TextComponentString(" §c"+BobMathUtil.ticksToDateString(contagion, 72000))));
+		}
+	}
+
+	/**
+	 * Cancer screener readout (spec §4). Mirrors printDiagnosticData's chat style.
+	 * Reports diagnosis, burden, current dose, monthly threshold/excess, the
+	 * current month's roll probability, and related ARS timer status.
+	 */
+	public static void printCancerData(EntityPlayer player) {
+		CancerSavedData data = CancerSavedData.get(player.world);
+		UUID id = player.getUniqueID();
+		long worldTime = player.world.getTotalWorldTime();
+
+		double totalRads = getActualPlayerRads(player);
+		double burden = data.getCancerBurden(id);
+		double monthly = data.getMonthlyDose(id, worldTime);
+		double excess = data.getMonthlyExcess(id, worldTime);
+		double chance = data.getCurrentRollChance(id, worldTime) * 100D;
+		long daysLeft = data.getDaysLeftInMonth(id, worldTime);
+		int tier = CancerSavedData.burdenTier(burden);
+		int arsTicks = ARSTimerSavedData.get(player.world).getTimerTicks(id);
+
+		player.sendMessage(new TextComponentString("===== ✚ ")
+				.appendSibling(new TextComponentTranslation("cancer.title"))
+				.appendSibling(new TextComponentString(" ✚ ====="))
+				.setStyle(new Style().setColor(TextFormatting.DARK_GREEN)));
+
+		// Diagnosis
+		if (burden > 0) {
+			player.sendMessage(new TextComponentTranslation("cancer.diagnosis")
+					.appendSibling(new TextComponentString(TextFormatting.RED + " POSITIVE (tier " + tier + ", burden " + String.format("%.2f", burden) + ")"))
+					.setStyle(new Style().setColor(TextFormatting.RED)));
+		} else {
+			player.sendMessage(new TextComponentTranslation("cancer.diagnosis")
+					.appendSibling(new TextComponentString(TextFormatting.GREEN + " NEGATIVE"))
+					.setStyle(new Style().setColor(TextFormatting.GREEN)));
+		}
+
+		// Current total dose
+		player.sendMessage(new TextComponentTranslation("cancer.totalDose")
+				.appendSibling(new TextComponentString(" " + String.format("%.2f", totalRads) + " RAD"))
+				.setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+		// Cancer burden
+		player.sendMessage(new TextComponentTranslation("cancer.burden")
+				.appendSibling(new TextComponentString(" " + String.format("%.2f", burden)))
+				.setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+		// Monthly accumulated + threshold
+		player.sendMessage(new TextComponentTranslation("cancer.monthly")
+				.appendSibling(new TextComponentString(" " + String.format("%.2f", monthly) + " / 10 RAD (resets in " + daysLeft + "d)"))
+				.setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+		// Roll probability / safe
+		if (excess > 0) {
+			player.sendMessage(new TextComponentTranslation("cancer.rollChance")
+					.appendSibling(new TextComponentString(TextFormatting.GOLD + " " + String.format("%.2f", chance) + "% this month (excess " + String.format("%.2f", excess) + " RAD)"))
+					.setStyle(new Style().setColor(TextFormatting.GOLD)));
+		} else {
+			player.sendMessage(new TextComponentTranslation("cancer.safe")
+					.setStyle(new Style().setColor(TextFormatting.GREEN)));
+		}
+
+		// ARS timer cross-reference
+		if (arsTicks > 0) {
+			player.sendMessage(new TextComponentTranslation("cancer.ars")
+					.appendSibling(new TextComponentString(TextFormatting.DARK_RED + " ACTIVE (" + (arsTicks / 20) + "s left)"))
+					.setStyle(new Style().setColor(TextFormatting.DARK_RED)));
 		}
 	}
 
@@ -654,11 +725,20 @@ public class ContaminationUtil {
 
         switch (hazard) {
             case MONOXIDE -> entity.attackEntityFrom(ModDamageSource.monoxide, (float) amount);
-            case RADIATION ->
-                    HbmLivingProps.incrementRadiation(entity, amount * (cont == ContaminationType.RAD_BYPASS ? 1D : calculateRadiationMod(entity)));
+            case RADIATION -> {
+                HbmLivingProps.incrementRadiation(entity, amount * (cont == ContaminationType.RAD_BYPASS ? 1D : calculateRadiationMod(entity)));
+                // Phase 5: cancer monthly accumulator — all RADIATION dose counts, including ARS-tier
+                if (entity instanceof EntityPlayer player && amount > 0) {
+                    CancerSavedData.get(player.world).addDose(player.getUniqueID(), amount, player.world.getTotalWorldTime());
+                }
+            }
             case NEUTRON -> {
                 HbmLivingProps.incrementRadiation(entity, amount * (cont == ContaminationType.RAD_BYPASS ? 1D : calculateRadiationMod(entity)));
                 HbmLivingProps.setNeutron(entity, amount);
+                // Phase 5: neutron dose also feeds cancer accumulator
+                if (entity instanceof EntityPlayer player && amount > 0) {
+                    CancerSavedData.get(player.world).addDose(player.getUniqueID(), amount, player.world.getTotalWorldTime());
+                }
             }
             case DIGAMMA -> applyDigammaData(entity, amount);
         }

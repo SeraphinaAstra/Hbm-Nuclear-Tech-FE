@@ -11,6 +11,7 @@ import com.hbm.items.IDynamicModels;
 import com.hbm.items.ModItems;
 import com.hbm.lib.ModDamageSource;
 import com.hbm.potion.HbmPotion;
+import com.hbm.saveddata.CancerSavedData;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.util.ITooltipFlag;
@@ -91,12 +92,19 @@ public class ItemPill extends ItemFood implements IDynamicModels, IClaimedModelL
         		player.addPotionEffect(new PotionEffect(HbmPotion.death, 60 * 60 * 20, 0));
         	}
 
+        	if(this == ModItems.pill_chemo) {
+        		CancerSavedData.get(player.world).reduceCancerBurden(player.getUniqueID(), 5D);
+        		VersatileConfig.applyPotionSickness(player, 10);
+        	}
+
         	if(this == ModItems.radx) {
         		player.addPotionEffect(new PotionEffect(HbmPotion.radx, 3 * 60 * 20, 3));
         	}
         	if(this == ModItems.siox) {
 				HbmLivingProps.setAsbestos(player, 0);
 				HbmLivingProps.setBlackLung(player, Math.min(HbmLivingProps.getBlackLung(player), EntityHbmProps.maxBlacklung / 5));
+				CancerSavedData.get(player.world).reduceCancerBurden(player.getUniqueID(), 5D);
+				VersatileConfig.applyPotionSickness(player, 10);
 			}
 
 			if(this == ModItems.pill_herbal) {

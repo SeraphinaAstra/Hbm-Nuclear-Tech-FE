@@ -3,6 +3,7 @@ package com.hbm.blocks.generic;
 import com.hbm.blocks.BlockBase;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.hazard.HazardSystem;
 import com.hbm.lib.ForgeDirection;
 import com.hbm.main.MainRegistry;
@@ -163,7 +164,7 @@ public class BlockHazard extends BlockBase {
             return;
         }
         if (this.radIn > 0) {
-            ChunkRadiationManager.proxy.incrementRad(worldIn, pos, radIn, radIn * 10F);
+            RadiationOcclusion.registerSource(worldIn, new RadiationOcclusion.RadiationSource(pos, radIn));
         }
     }
 

@@ -3,6 +3,7 @@ package com.hbm.tileentity.machine;
 import com.hbm.api.energymk2.IEnergyReceiverMK2;
 import com.hbm.api.fluidmk2.IFluidStandardReceiverMK2;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.hazard.HazardRegistry;
 import com.hbm.hazard.HazardSystem;
 import com.hbm.interfaces.AutoRegister;
@@ -140,7 +141,7 @@ public class TileEntityMachineAnnihilator extends TileEntityMachineBase implemen
         double radiation = HazardSystem.getHazardLevelFromStack(stack, HazardRegistry.RADIATION);
         if(radiation > 0) {
             ForgeDirection dir = ForgeDirection.getOrientation(this.getBlockMetadata() - 10);
-            ChunkRadiationManager.proxy.incrementRad(world, pos.add(-dir.offsetX * 3, 9, -dir.offsetZ * 3), Math.min(radiation * 5F, 1_000F));
+            RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos.add(-dir.offsetX * 3, 9, -dir.offsetZ * 3), Math.min(radiation * 5D, 1_000D)));
         }
     }
 

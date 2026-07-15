@@ -129,6 +129,9 @@ public class ConsumableRecipes {
             CraftingManager.addShapelessAuto(new ItemStack(ModItems.xanax, 1),COAL.dust(), KNO.dust(), BR.dust() );
         }
 
+        // Chemotherapy - repurposed SiOX + Plan C into a cancer treatment
+        CraftingManager.addShapelessAuto(new ItemStack(ModItems.pill_chemo), ModItems.siox, ModItems.plan_c );
+
         //Med bags
         CraftingManager.addRecipeAuto(new ItemStack(ModItems.med_bag, 1),"LLL", "SIS", "LLL", 'L', Items.LEATHER, 'S', ModItems.syringe_metal_stimpak, 'I', ModItems.syringe_antidote );
         CraftingManager.addRecipeAuto(new ItemStack(ModItems.med_bag, 1),"LLL", "SIS", "LLL", 'L', Items.LEATHER, 'S', ModItems.syringe_metal_stimpak, 'I', ModItems.pill_iodine );

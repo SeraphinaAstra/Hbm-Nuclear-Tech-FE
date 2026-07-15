@@ -5,6 +5,7 @@ import com.hbm.capability.HbmLivingProps;
 import com.hbm.config.GeneralConfig;
 import com.hbm.handler.ArmorUtil;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.lib.ForgeDirection;
 import com.hbm.potion.HbmPotion;
 import com.hbm.util.ArmorRegistry;
@@ -83,10 +84,11 @@ public class BlockGasMeltdown extends BlockGasBase {
             }
 
             if (world.canSeeSky(pos)) {
-                ChunkRadiationManager.proxy.incrementRad(world, pos, 5F, 50F);
+                RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, 5D));
             }
 
             if (rand.nextInt(350) == 0) {
+                RadiationOcclusion.deregisterSource(world, pos);
                 world.setBlockToAir(pos);
                 return;
             }

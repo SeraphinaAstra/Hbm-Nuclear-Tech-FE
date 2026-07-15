@@ -77,6 +77,7 @@ public class ModItems {
 
     public static final Item dosimeter = new ItemDosimeter("dosimeter").setMaxStackSize(1).setCreativeTab(MainRegistry.consumableTab);
     public static final Item geiger_counter = new ItemGeigerCounter("geiger_counter").setMaxStackSize(1).setCreativeTab(MainRegistry.consumableTab);
+    public static final Item cancer_screener = new ItemCancerScreener("cancer_screener").setMaxStackSize(1).setCreativeTab(MainRegistry.consumableTab);
     public static final Item digamma_diagnostic = new ItemDigammaDiagnostic("digamma_diagnostic").setMaxStackSize(1).setCreativeTab(MainRegistry.consumableTab);
     public static final Item lung_diagnostic = new ItemLungDiagnostic("lung_diagnostic").setMaxStackSize(1).setCreativeTab(MainRegistry.consumableTab);
 
@@ -149,6 +150,7 @@ public class ModItems {
     public static final Item pill_iodine = new ItemPill(0, "pill_iodine").setCreativeTab(MainRegistry.consumableTab);
     public static final Item plan_c = new ItemPill(0, "plan_c").setCreativeTab(MainRegistry.consumableTab);
     public static final Item pill_red = new ItemPill(0, "pill_red").setCreativeTab(MainRegistry.consumableTab);
+    public static final Item pill_chemo = new ItemPill(0, "pill_chemo").setCreativeTab(MainRegistry.consumableTab);
     public static final Item iv_blood = new ItemSimpleConsumable("iv_blood").setUseActionServer((stack, user) -> {
         ItemSimpleConsumable.giveSoundAndDecrement(stack, user, HBMSoundHandler.radawayUse, new ItemStack(ModItems.iv_empty));
         user.heal(3F);

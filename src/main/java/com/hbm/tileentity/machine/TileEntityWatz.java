@@ -6,6 +6,7 @@ import com.hbm.blocks.ModBlocks;
 import com.hbm.entity.projectile.EntityShrapnel;
 import com.hbm.handler.CompatHandler;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.handler.threading.PacketThreading;
 import com.hbm.interfaces.AutoRegister;
 import com.hbm.interfaces.IControlReceiver;
@@ -191,7 +192,7 @@ public class TileEntityWatz extends TileEntityMachineBase implements ITickable, 
                 }
                 this.disassemble();
 
-                ChunkRadiationManager.proxy.incrementRad(world, pos.add(0, 1, 0), 1_000F);
+                RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos.add(0, 1, 0), 1_000D));
                 world.playSound(null, pos.getX() + 0.5, pos.getY() + 2, pos.getZ() + 0.5, HBMSoundHandler.rbmk_explosion, SoundCategory.BLOCKS, 50.0F, 1.0F);
                 NBTTagCompound data = new NBTTagCompound();
                 data.setFloat("scale", 5);

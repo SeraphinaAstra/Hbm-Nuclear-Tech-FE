@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.hbm.Tags;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.radiation.ChunkRadiationManager;
+import com.hbm.handler.radiation.RadiationOcclusion;
 import com.hbm.items.IDynamicModels;
 import com.hbm.potion.HbmPotion;
 import com.hbm.render.block.BlockBakeFrame;
@@ -105,10 +106,11 @@ public class BlockSellafield extends BlockMeta implements IDynamicModels {
         if (world.isRemote) return;
         IBlockState currentState = world.getBlockState(pos);
         int level = currentState.getValue(META);
-        float netRad = rad * (level + 1);
-        ChunkRadiationManager.proxy.incrementRad(world, pos, netRad);
+        double netRad = rad * (level + 1);
+        RadiationOcclusion.registerSource(world, new RadiationOcclusion.RadiationSource(pos, netRad));
 
         if (rand.nextInt(level == 0 ? 25 : 15) == 0) {
+            RadiationOcclusion.deregisterSource(world, pos);
             if (level > 0)
                 world.setBlockState(pos, ModBlocks.sellafield.getDefaultState().withProperty(META, level - 1), 2);
             else
